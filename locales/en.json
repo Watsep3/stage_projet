@@ -1,0 +1,203 @@
+{
+  "common": {
+    "title": "MindCare",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "date": "Date",
+    "author": "Author",
+    "category": "Category",
+    "tags": "Tags",
+    "read_more": "Read more",
+    "view_all": "View all",
+    "no_results": "No results found",
+    "page_not_found": "Page not found"
+  },
+  "navigation": {
+    "home": "Home",
+    "articles": "Articles",
+    "reports": "Reports",
+    "about": "About",
+    "contact": "Contact",
+    "help": "Help",
+    "settings": "Settings"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "toggle": "Toggle theme",
+    "current": "Current theme"
+  },
+  "language": {
+    "french": "French",
+    "english": "English",
+    "arabic": "Arabic",
+    "select": "Select language",
+    "current": "Current language"
+  },
+  "home": {
+    "title": "Welcome to MindCare",
+    "subtitle": "Your mental health platform",
+    "description": "Discover articles, reports and resources to improve your mental well-being.",
+    "hero_title": "Take care of your mental health",
+    "hero_subtitle": "Access reliable resources and professional advice",
+    "features": {
+      "title": "Our features",
+      "articles": {
+        "title": "Specialized articles",
+        "description": "Discover articles written by professionals"
+      },
+      "reports": {
+        "title": "Detailed reports",
+        "description": "Consult in-depth reports on mental health"
+      },
+      "resources": {
+        "title": "Useful resources",
+        "description": "Access practical tools and resources"
+      },
+      "support": {
+        "title": "24/7 Support",
+        "description": "Get help when you need it"
+      }
+    },
+    "stats": {
+      "articles": "Articles",
+      "reports": "Reports",
+      "users": "Users",
+      "specialists": "Specialists"
+    },
+    "cta": {
+      "title": "Ready to start?",
+      "description": "Explore our resources and begin your journey",
+      "button": "Explore now"
+    }
+  },
+  "articles": {
+    "title": "Articles",
+    "subtitle": "Discover our mental health articles",
+    "categories": {
+      "anxiety": "Anxiety",
+      "depression": "Depression",
+      "stress": "Stress",
+      "wellness": "Wellness",
+      "therapy": "Therapy",
+      "mindfulness": "Mindfulness"
+    },
+    "filters": {
+      "all": "All",
+      "recent": "Recent",
+      "popular": "Popular",
+      "featured": "Featured"
+    },
+    "sort": {
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "popular": "Popular",
+      "title": "Title A-Z"
+    },
+    "card": {
+      "read_time": "Reading time: {minutes} min",
+      "published": "Published on {date}",
+      "by": "By {author}"
+    },
+    "empty": "No articles found for the selected criteria"
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Consult our detailed reports",
+    "types": {
+      "research": "Research",
+      "survey": "Survey",
+      "analysis": "Analysis",
+      "white_paper": "White paper"
+    },
+    "card": {
+      "pages": "{count} pages",
+      "download": "Download",
+      "view": "View",
+      "published": "Published on {date}"
+    },
+    "empty": "No reports available"
+  },
+  "about": {
+    "title": "About",
+    "subtitle": "Discover our mission",
+    "mission": {
+      "title": "Our mission",
+      "description": "Improve access to mental health resources and raise public awareness."
+    },
+    "team": {
+      "title": "Our team",
+      "description": "A team of professionals dedicated to your well-being."
+    },
+    "values": {
+      "title": "Our values",
+      "accessibility": "Accessibility",
+      "quality": "Quality",
+      "empathy": "Empathy",
+      "innovation": "Innovation"
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Contact us",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "send": "Send",
+      "success": "Message sent successfully!",
+      "error": "Error sending message"
+    },
+    "info": {
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "hours": "Opening hours"
+    }
+  },
+  "footer": {
+    "description": "MindCare - Your mental health platform",
+    "links": {
+      "privacy": "Privacy",
+      "terms": "Terms of use",
+      "cookies": "Cookies",
+      "sitemap": "Sitemap"
+    },
+    "social": {
+      "follow": "Follow us",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "instagram": "Instagram"
+    },
+    "copyright": "© {year} MindCare. All rights reserved."
+  },
+  "errors": {
+    "404": {
+      "title": "Page not found",
+      "description": "The page you're looking for doesn't exist.",
+      "button": "Back to home"
+    },
+    "500": {
+      "title": "Server error",
+      "description": "An unexpected error occurred.",
+      "button": "Retry"
+    },
+    "network": {
+      "title": "Network error",
+      "description": "Unable to connect to server.",
+      "button": "Retry"
+    }
+  }
+}

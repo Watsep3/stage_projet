@@ -1,0 +1,203 @@
+{
+  "common": {
+    "title": "MindCare",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "date": "Date",
+    "author": "Auteur",
+    "category": "Catégorie",
+    "tags": "Tags",
+    "read_more": "Lire plus",
+    "view_all": "Voir tout",
+    "no_results": "Aucun résultat trouvé",
+    "page_not_found": "Page non trouvée"
+  },
+  "navigation": {
+    "home": "Accueil",
+    "articles": "Articles",
+    "reports": "Rapports",
+    "about": "À propos",
+    "contact": "Contact",
+    "help": "Aide",
+    "settings": "Paramètres"
+  },
+  "theme": {
+    "light": "Clair",
+    "dark": "Sombre",
+    "toggle": "Basculer le thème",
+    "current": "Thème actuel"
+  },
+  "language": {
+    "french": "Français",
+    "english": "Anglais",
+    "arabic": "Arabe",
+    "select": "Sélectionner la langue",
+    "current": "Langue actuelle"
+  },
+  "home": {
+    "title": "Bienvenue sur MindCare",
+    "subtitle": "Votre plateforme de santé mentale",
+    "description": "Découvrez des articles, rapports et ressources pour améliorer votre bien-être mental.",
+    "hero_title": "Prenez soin de votre santé mentale",
+    "hero_subtitle": "Accédez à des ressources fiables et des conseils professionnels",
+    "features": {
+      "title": "Nos fonctionnalités",
+      "articles": {
+        "title": "Articles spécialisés",
+        "description": "Découvrez des articles rédigés par des professionnels"
+      },
+      "reports": {
+        "title": "Rapports détaillés",
+        "description": "Consultez des rapports approfondis sur la santé mentale"
+      },
+      "resources": {
+        "title": "Ressources utiles",
+        "description": "Accédez à des outils et ressources pratiques"
+      },
+      "support": {
+        "title": "Support 24/7",
+        "description": "Obtenez de l'aide quand vous en avez besoin"
+      }
+    },
+    "stats": {
+      "articles": "Articles",
+      "reports": "Rapports",
+      "users": "Utilisateurs",
+      "specialists": "Spécialistes"
+    },
+    "cta": {
+      "title": "Prêt à commencer ?",
+      "description": "Explorez nos ressources et commencez votre parcours",
+      "button": "Explorer maintenant"
+    }
+  },
+  "articles": {
+    "title": "Articles",
+    "subtitle": "Découvrez nos articles sur la santé mentale",
+    "categories": {
+      "anxiety": "Anxiété",
+      "depression": "Dépression",
+      "stress": "Stress",
+      "wellness": "Bien-être",
+      "therapy": "Thérapie",
+      "mindfulness": "Pleine conscience"
+    },
+    "filters": {
+      "all": "Tous",
+      "recent": "Récents",
+      "popular": "Populaires",
+      "featured": "À la une"
+    },
+    "sort": {
+      "newest": "Plus récent",
+      "oldest": "Plus ancien",
+      "popular": "Populaire",
+      "title": "Titre A-Z"
+    },
+    "card": {
+      "read_time": "Temps de lecture : {minutes} min",
+      "published": "Publié le {date}",
+      "by": "Par {author}"
+    },
+    "empty": "Aucun article trouvé pour les critères sélectionnés"
+  },
+  "reports": {
+    "title": "Rapports",
+    "subtitle": "Consultez nos rapports détaillés",
+    "types": {
+      "research": "Recherche",
+      "survey": "Enquête",
+      "analysis": "Analyse",
+      "white_paper": "Livre blanc"
+    },
+    "card": {
+      "pages": "{count} pages",
+      "download": "Télécharger",
+      "view": "Consulter",
+      "published": "Publié le {date}"
+    },
+    "empty": "Aucun rapport disponible"
+  },
+  "about": {
+    "title": "À propos",
+    "subtitle": "Découvrez notre mission",
+    "mission": {
+      "title": "Notre mission",
+      "description": "Améliorer l'accès aux ressources de santé mentale et sensibiliser le public."
+    },
+    "team": {
+      "title": "Notre équipe",
+      "description": "Une équipe de professionnels dévoués à votre bien-être."
+    },
+    "values": {
+      "title": "Nos valeurs",
+      "accessibility": "Accessibilité",
+      "quality": "Qualité",
+      "empathy": "Empathie",
+      "innovation": "Innovation"
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Contactez-nous",
+    "form": {
+      "name": "Nom",
+      "email": "Email",
+      "subject": "Sujet",
+      "message": "Message",
+      "send": "Envoyer",
+      "success": "Message envoyé avec succès !",
+      "error": "Erreur lors de l'envoi du message"
+    },
+    "info": {
+      "address": "Adresse",
+      "phone": "Téléphone",
+      "email": "Email",
+      "hours": "Heures d'ouverture"
+    }
+  },
+  "footer": {
+    "description": "MindCare - Votre plateforme de santé mentale",
+    "links": {
+      "privacy": "Confidentialité",
+      "terms": "Conditions d'utilisation",
+      "cookies": "Cookies",
+      "sitemap": "Plan du site"
+    },
+    "social": {
+      "follow": "Suivez-nous",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "instagram": "Instagram"
+    },
+    "copyright": "© {year} MindCare. Tous droits réservés."
+  },
+  "errors": {
+    "404": {
+      "title": "Page non trouvée",
+      "description": "La page que vous cherchez n'existe pas.",
+      "button": "Retour à l'accueil"
+    },
+    "500": {
+      "title": "Erreur serveur",
+      "description": "Une erreur inattendue s'est produite.",
+      "button": "Réessayer"
+    },
+    "network": {
+      "title": "Erreur réseau",
+      "description": "Impossible de se connecter au serveur.",
+      "button": "Réessayer"
+    }
+  }
+}

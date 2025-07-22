@@ -1,14 +1,14 @@
 from nicegui import ui
 from core.i18n import i18n, _
 from core.theme import theme_manager
+from config.database import SessionLocal, ArticleService
 import json
-from pathlib import Path
 
 class ArticlesPage:
-    """Page des articles avec système de thème centralisé"""
+    """Page des articles utilisant la base de données avec thème corrigé"""
     
     def __init__(self):
-        self.articles = self.load_articles()
+        self.articles = []
         self.current_category = "all"
         
         self.categories = {
@@ -20,60 +20,121 @@ class ArticlesPage:
             "therapy": "Thérapie",
             "mindfulness": "Pleine conscience"
         }
+        
+        # Charger les articles depuis la base de données
+        self.load_articles_from_db()
     
-    def load_articles(self):
-        """Charger les articles depuis le fichier JSON"""
-        articles_file = Path("data/articles.json")
+    def load_articles_from_db(self):
+        """Charger les articles depuis la base de données"""
+        try:
+            db = SessionLocal()
+            # Utiliser le service pour récupérer tous les articles
+            db_articles = ArticleService.get_all(db)
+            
+            # Convertir les objets SQLAlchemy en dictionnaires
+            self.articles = []
+            for article in db_articles:
+                article_dict = {
+                    "id": article.id,
+                    "title": article.title,
+                    "summary": article.summary,
+                    "category": article.category,
+                    "author": article.author,
+                    "date": article.date_created.strftime("%Y-%m-%d") if article.date_created else "",
+                    "read_time": article.read_time or 5,
+                    "image": article.image,
+                    "tags": json.loads(article.tags) if article.tags else [],
+                    "views": article.views or 0,
+                    "likes": article.likes or 0,
+                    "shares": article.shares or 0,
+                    "featured": article.featured or False,
+                    "published": article.published or True,
+                    "difficulty": article.difficulty or "beginner",
+                    "content": article.content or ""
+                }
+                self.articles.append(article_dict)
+            
+            db.close()
+            print(f"✅ {len(self.articles)} articles chargés depuis la base de données")
+            
+        except Exception as e:
+            print(f"❌ Erreur lors du chargement des articles: {e}")
+            # En cas d'erreur, utiliser une liste vide
+            self.articles = []
+    
+    def get_articles_by_category(self, category: str):
+        """Obtenir les articles d'une catégorie spécifique depuis la BDD"""
+        if category == "all":
+            return self.articles
         
-        if articles_file.exists():
-            try:
-                with open(articles_file, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-            except Exception as e:
-                print(f"Erreur lors du chargement des articles: {e}")
+        try:
+            db = SessionLocal()
+            db_articles = ArticleService.get_by_category(db, category)
+            
+            filtered_articles = []
+            for article in db_articles:
+                article_dict = {
+                    "id": article.id,
+                    "title": article.title,
+                    "summary": article.summary,
+                    "category": article.category,
+                    "author": article.author,
+                    "date": article.date_created.strftime("%Y-%m-%d") if article.date_created else "",
+                    "read_time": article.read_time or 5,
+                    "image": article.image,
+                    "tags": json.loads(article.tags) if article.tags else [],
+                    "views": article.views or 0,
+                    "likes": article.likes or 0,
+                    "shares": article.shares or 0,
+                    "featured": article.featured or False,
+                    "published": article.published or True,
+                    "difficulty": article.difficulty or "beginner"
+                }
+                filtered_articles.append(article_dict)
+            
+            db.close()
+            return filtered_articles
+            
+        except Exception as e:
+            print(f"❌ Erreur lors du filtrage par catégorie: {e}")
+            return []
+    
+    def search_articles(self, query: str):
+        """Rechercher des articles dans la base de données"""
+        if not query.strip():
+            return self.articles
         
-        # Articles d'exemple
-        return [
-            {
-                "id": 1,
-                "title": "Gérer l'anxiété au quotidien",
-                "summary": "Des techniques pratiques pour réduire l'anxiété et retrouver la sérénité.",
-                "category": "anxiety",
-                "author": "Dr. Sarah Ahmed",
-                "date": "2024-01-15",
-                "read_time": 8,
-                "image": "/static/images/anxiety.jpg",
-                "tags": ["anxiété", "gestion", "techniques"],
-                "views": 1250,
-                "featured": True
-            },
-            {
-                "id": 2,
-                "title": "L'importance du sommeil pour la santé mentale",
-                "summary": "Comment un bon sommeil améliore votre bien-être mental.",
-                "category": "wellness",
-                "author": "Dr. Marc Dubois",
-                "date": "2024-01-10",
-                "read_time": 6,
-                "image": "/static/images/sleep.jpg",
-                "tags": ["sommeil", "bien-être", "santé"],
-                "views": 950,
-                "featured": False
-            },
-            {
-                "id": 3,
-                "title": "Méditation et pleine conscience",
-                "summary": "Les bienfaits de la méditation sur l'esprit et le corps.",
-                "category": "mindfulness",
-                "author": "Fatima El Alami",
-                "date": "2024-01-05",
-                "read_time": 10,
-                "image": "/static/images/meditation.jpg",
-                "tags": ["méditation", "pleine conscience", "relaxation"],
-                "views": 1800,
-                "featured": True
-            }
-        ]
+        try:
+            db = SessionLocal()
+            db_articles = ArticleService.search(db, query)
+            
+            search_results = []
+            for article in db_articles:
+                article_dict = {
+                    "id": article.id,
+                    "title": article.title,
+                    "summary": article.summary,
+                    "category": article.category,
+                    "author": article.author,
+                    "date": article.date_created.strftime("%Y-%m-%d") if article.date_created else "",
+                    "read_time": article.read_time or 5,
+                    "image": article.image,
+                    "tags": json.loads(article.tags) if article.tags else [],
+                    "views": article.views or 0,
+                    "likes": article.likes or 0,
+                    "shares": article.shares or 0,
+                    "featured": article.featured or False,
+                    "published": article.published or True,
+                    "difficulty": article.difficulty or "beginner"
+                }
+                search_results.append(article_dict)
+            
+            db.close()
+            return search_results
+            
+        except Exception as e:
+            print(f"❌ Erreur lors de la recherche: {e}")
+            return []
     
     def render(self):
         """Rendre la page des articles"""
@@ -94,12 +155,12 @@ class ArticlesPage:
                 ui.label('Découvrez nos articles sur la santé mentale').classes('text-xl opacity-90')
     
     def render_filters(self):
-        """Rendre les filtres avec classes de thème"""
+        """Rendre les filtres avec thème"""
         with ui.element('div').classes('w-full py-6 px-4 bg-card border-default border-b'):
-            with ui.row().classes('page-container mx-auto gap-4 items-center'):
+            with ui.row().classes('page-container mx-auto gap-4 items-center flex-wrap'):
                 ui.label('Catégorie :').classes('font-medium text-main')
                 
-                # Boutons de catégorie avec classes de thème
+                # Boutons de catégorie
                 with ui.row().classes('gap-2 flex-wrap'):
                     for key, label in self.categories.items():
                         if key == self.current_category:
@@ -114,14 +175,14 @@ class ArticlesPage:
                             ).classes('px-4 py-2 rounded bg-surface text-muted hover:bg-hover hover:text-primary transition-colors')
     
     def render_articles_grid(self):
-        """Rendre la grille des articles avec classes de thème"""
+        """Rendre la grille des articles"""
         filtered_articles = self.get_filtered_articles()
         
         with ui.element('div').classes('w-full py-8 px-4 bg-surface'):
             with ui.column().classes('page-container mx-auto'):
                 
                 if not filtered_articles:
-                    ui.label('Aucun article trouvé pour cette catégorie').classes('text-center text-muted py-8')
+                    self.render_empty_state()
                     return
                 
                 # Grille d'articles
@@ -129,17 +190,46 @@ class ArticlesPage:
                     for article in filtered_articles:
                         self.render_article_card(article)
     
+    def render_empty_state(self):
+        """Rendre l'état vide"""
+        with ui.column().classes('items-center justify-center py-16 text-center'):
+            ui.icon('article').classes('text-6xl text-muted mb-4')
+            ui.label('Aucun article trouvé pour cette catégorie').classes('text-xl text-muted mb-4')
+            ui.button(
+                'Voir tous les articles',
+                on_click=lambda: self.filter_by_category('all')
+            ).classes(theme_manager.get_button_classes('primary', 'md'))
+    
     def render_article_card(self, article):
-        """Rendre une carte d'article avec classes de thème"""
+        """Rendre une carte d'article avec thème"""
         with ui.card().classes(theme_manager.get_card_classes(hover=True) + ' cursor-pointer'):
-            # Image placeholder
-            with ui.element('div').classes('h-48 bg-surface flex items-center justify-center'):
-                ui.icon('article').classes('text-4xl text-muted')
+            # Image placeholder ou réelle
+            with ui.element('div').classes('h-48 bg-surface flex items-center justify-center relative overflow-hidden'):
+                if article.get("image"):
+                    ui.image(article["image"]).classes('w-full h-full object-cover')
+                else:
+                    ui.icon('article').classes('text-4xl text-muted')
+                
+                # Badge featured
+                if article.get("featured"):
+                    with ui.element('div').classes('absolute top-2 right-2'):
+                        ui.chip('⭐ En vedette').classes('bg-yellow-500 text-white text-xs')
+                
+                # Badge difficulté
+                if article.get("difficulty"):
+                    with ui.element('div').classes('absolute top-2 left-2'):
+                        difficulty_colors = {
+                            "beginner": "bg-green-500 text-white",
+                            "intermediate": "bg-yellow-500 text-white", 
+                            "advanced": "bg-red-500 text-white"
+                        }
+                        color_class = difficulty_colors.get(article["difficulty"], "bg-gray-500 text-white")
+                        ui.chip(article["difficulty"].title()).classes(f'{color_class} text-xs')
             
             with ui.card_section().classes('p-6'):
                 # Catégorie avec couleur de thème
                 category_name = self.categories.get(article["category"], article["category"])
-                ui.chip(category_name).classes(theme_manager.get_button_classes('primary', 'sm') + ' text-xs mb-3')
+                ui.chip(category_name).classes('text-xs mb-3 px-3 py-1 bg-primary text-white rounded-full')
                 
                 # Titre
                 ui.label(article["title"]).classes('text-xl font-bold mb-2 line-clamp-2 text-main')
@@ -156,9 +246,9 @@ class ArticlesPage:
                 # Tags
                 with ui.row().classes('gap-1 mb-4 flex-wrap'):
                     for tag in article["tags"][:3]:
-                        ui.chip(f"#{tag}").classes('text-xs bg-surface text-muted')
+                        ui.chip(f"#{tag}").classes('text-xs bg-surface text-muted px-2 py-1 rounded')
                 
-                # Actions avec bouton de thème
+                # Actions avec boutons thématisés
                 with ui.row().classes('justify-between items-center'):
                     ui.button(
                         'Lire plus',
@@ -166,23 +256,55 @@ class ArticlesPage:
                         icon='read_more'
                     ).classes(theme_manager.get_button_classes('primary', 'md'))
                     
-                    ui.label(f"👁 {article['views']}").classes('text-sm text-muted')
+                    with ui.row().classes('gap-2 items-center text-sm text-muted'):
+                        ui.label(f"👁 {article['views']}")
+                        ui.label(f"❤️ {article['likes']}")
+                        if article.get('shares', 0) > 0:
+                            ui.label(f"📤 {article['shares']}")
     
     def get_filtered_articles(self):
         """Obtenir les articles filtrés"""
         if self.current_category == "all":
             return self.articles
-        
-        return [a for a in self.articles if a["category"] == self.current_category]
+        else:
+            return self.get_articles_by_category(self.current_category)
     
     def filter_by_category(self, category):
         """Filtrer par catégorie"""
         self.current_category = category
-        # Dans une vraie app, on rechargerait les données
-        # Pour l'instant, on simule avec une notification
+        # Recharger la page avec la nouvelle catégorie
         ui.notify(f'Filtrage par catégorie: {self.categories[category]}', type='info')
+        
+        # Dans une vraie app avec état, on mettrait à jour l'affichage ici
+        # Pour l'instant, on simule avec une notification
+        ui.run_javascript('window.location.reload()')
     
     def read_article(self, article):
         """Lire un article"""
+        # Incrémenter le nombre de vues dans la base de données
+        try:
+            db = SessionLocal()
+            db_article = db.query(ArticleService.Article).filter_by(id=article["id"]).first()
+            if db_article:
+                db_article.views = (db_article.views or 0) + 1
+                db.commit()
+            db.close()
+        except Exception as e:
+            print(f"❌ Erreur lors de l'incrémentation des vues: {e}")
+        
         ui.notify(f'Ouverture de l\'article: {article["title"]}', type='info')
         # Dans une vraie app: ui.navigate.to(f'/article/{article["id"]}')
+        
+    def increment_article_views(self, article_id: int):
+        """Incrémenter le nombre de vues d'un article"""
+        try:
+            db = SessionLocal()
+            from config.database import Article
+            article = db.query(Article).filter_by(id=article_id).first()
+            if article:
+                article.views = (article.views or 0) + 1
+                db.commit()
+                print(f"✅ Vues incrémentées pour l'article {article_id}")
+            db.close()
+        except Exception as e:
+            print(f"❌ Erreur lors de l'incrémentation des vues: {e}")

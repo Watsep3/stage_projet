@@ -1,25 +1,30 @@
 from nicegui import ui
 from typing import Callable, Optional
-from core.theme import theme_manager, ThemePreference
 
 class Navbar:
-    """Composant Navbar réutilisable avec support du thème système"""
+    """Composant Navbar réutilisable avec support du thème simplifié"""
     
     def __init__(self, app_name: str = "MindCare", current_theme: str = "light"):
         self.app_name = app_name
         self.current_theme = current_theme
-        self.theme_preference = "auto"  # auto, light, dark
         self.on_theme_toggle: Optional[Callable] = None
         self.on_mobile_menu_click: Optional[Callable] = None
         
+        # Initialiser le sélecteur de langue
+        try:
+            from components.language_selector import LanguageSelector
+            self.language_selector = LanguageSelector()
+        except:
+            self.language_selector = None
+        
         # Navigation items
         self.nav_items = [
-            {"label": "Accueil", "url": "/", "icon": "home"},
-            {"label": "Articles", "url": "/articles", "icon": "article"},
-            {"label": "Rapports", "url": "/reports", "icon": "description"},
-            {"label": "Chatbot", "url": "/chatbot", "icon": "smart_toy"},
-            {"label": "À propos", "url": "/about", "icon": "info"},
-            {"label": "Contact", "url": "/contact", "icon": "contact_mail"}
+            {"label": "nav.home", "url": "/", "icon": "home"},
+            {"label": "nav.articles", "url": "/articles", "icon": "article"},
+            {"label": "nav.reports", "url": "/reports", "icon": "description"},
+            {"label": "nav.chatbot", "url": "/chatbot", "icon": "smart_toy"},
+            {"label": "nav.about", "url": "/about", "icon": "info"},
+            {"label": "nav.contact", "url": "/contact", "icon": "contact_mail"}
         ]
     
     def set_theme_toggle_callback(self, callback: Callable):
@@ -36,16 +41,12 @@ class Navbar:
         """Mettre à jour le thème actuel"""
         self.current_theme = new_theme
     
-    def update_theme_preference(self, preference: str):
-        """Mettre à jour la préférence de thème"""
-        self.theme_preference = preference
-    
     def render(self):
-        """Rendre la navbar complète avec le système de thème centralisé"""
-        # Ajouter le CSS responsive AVANT de créer les éléments
+        """Rendre la navbar complète"""
+        # Ajouter le CSS responsive
         self._add_responsive_css()
         
-        # Utiliser les classes de thème au lieu des couleurs hardcodées
+        # Navbar principale
         with ui.element('div').classes('w-full shadow-sm border-default navbar bg-card'):
             with ui.row().classes('items-center justify-between navbar-container mx-auto w-full min-h-16'):
                 # Logo
@@ -54,48 +55,74 @@ class Navbar:
                 # Navigation desktop
                 self._render_desktop_nav()
                 
-                # Actions (thème + menu mobile)
+                # Actions (langue + thème + menu mobile)
                 self._render_actions()
     
     def _render_logo(self):
-        """Rendre le logo avec classes de thème"""
+        """Rendre le logo"""
         ui.link(
             f'🌱 {self.app_name}', 
             '/'
         ).classes('logo-text text-2xl font-bold cursor-pointer flex items-center text-primary hover:text-primary-dark').style('text-decoration: none;')
     
     def _render_desktop_nav(self):
-        """Rendre la navigation desktop avec classes de thème"""
+        """Rendre la navigation desktop"""
+        try:
+            from core.i18n import _
+        except:
+            def _(key): return key.split('.')[-1].title()
+        
         with ui.row().classes('desktop-nav gap-6 flex items-center'):
             for item in self.nav_items:
-                ui.link(item["label"], item["url"]).classes(
+                ui.link(_(item["label"]), item["url"]).classes(
                     'nav-link px-3 py-2 rounded-md text-muted hover:text-primary hover:bg-surface transition-all duration-200 font-medium'
                 ).style('text-decoration: none;')
     
     def _render_actions(self):
-        """Rendre les boutons d'action avec classes de thème"""
+        """Rendre les boutons d'action"""
         with ui.row().classes('actions-container gap-2 items-center'):
-            # Bouton thème
+            # Sélecteur de langue (desktop)
+            with ui.element('div').classes('language-selector-desktop'):
+                if self.language_selector:
+                    try:
+                        self.language_selector.render_buttons()
+                    except Exception as e:
+                        print(f"⚠️ Erreur sélecteur de langue: {e}")
+                        self._render_simple_language_fallback()
+                else:
+                    self._render_simple_language_fallback()
+            
+            # Bouton thème simplifié
             self._render_theme_button()
             
             # Menu mobile
             self._render_mobile_menu_button()
     
+    def _render_simple_language_fallback(self):
+        """Fallback simple pour le sélecteur de langue"""
+        languages = {'fr': '🇫🇷', 'en': '🇺🇸', 'ar': '🇸🇦'}
+        with ui.row().classes('gap-1'):
+            for code, flag in languages.items():
+                ui.button(
+                    flag,
+                    on_click=lambda c=code: ui.notify(f'Langue {c} sélectionnée')
+                ).classes('w-8 h-8 rounded').props('flat').tooltip(code.upper())
+    
     def _render_theme_button(self):
-        """Rendre le bouton de changement de thème avec la bonne icône"""
-        # Obtenir l'icône selon la préférence actuelle
-        theme_icon = self.get_theme_icon()
-        theme_tooltip = self.get_theme_tooltip()
+        """Rendre le bouton de thème simplifié"""
+        # Icône selon le thème actuel (montrer ce qui va être activé)
+        icon = 'dark_mode' if self.current_theme == 'light' else 'light_mode'
+        tooltip = f'Activer le thème {"sombre" if self.current_theme == "light" else "clair"}'
         
         ui.button(
-            icon=theme_icon,
+            icon=icon,
             on_click=self._handle_theme_toggle
         ).classes('p-2 rounded-full hover:bg-surface transition-all text-muted hover:text-primary') \
          .props('flat') \
-         .tooltip(theme_tooltip)
+         .tooltip(tooltip)
     
     def _render_mobile_menu_button(self):
-        """Rendre le bouton du menu mobile avec classes de thème"""
+        """Rendre le bouton du menu mobile"""
         ui.button(
             icon='menu',
             on_click=self._handle_mobile_menu
@@ -106,12 +133,10 @@ class Navbar:
         if self.on_theme_toggle:
             self.on_theme_toggle()
         else:
-            # Comportement par défaut utilisant le ThemeManager
+            # Comportement par défaut
+            from core.theme import theme_manager
             theme_manager.toggle_theme()
             self.current_theme = theme_manager.current_theme.value
-            self.theme_preference = theme_manager.theme_preference.value
-            
-            # Notification déjà gérée par le ThemeManager
     
     def _handle_mobile_menu(self):
         """Gérer le clic sur le menu mobile"""
@@ -121,7 +146,12 @@ class Navbar:
             self.show_default_mobile_menu()
     
     def show_default_mobile_menu(self):
-        """Afficher le menu mobile avec classes de thème et info de thème améliorée"""
+        """Afficher le menu mobile par défaut"""
+        try:
+            from core.i18n import _
+        except:
+            def _(key): return key.split('.')[-1].title()
+        
         with ui.dialog().classes('mobile-dialog') as dialog:
             with ui.card().classes('w-full max-w-sm bg-card'):
                 with ui.column().classes('gap-4 p-4'):
@@ -133,65 +163,41 @@ class Navbar:
                     # Navigation items
                     for item in self.nav_items:
                         ui.button(
-                            item["label"], 
+                            _(item["label"]), 
                             icon=item.get("icon"),
                             on_click=lambda url=item["url"]: (ui.navigate.to(url), dialog.close())
                         ).classes('w-full justify-start text-left text-muted hover:text-primary hover:bg-surface').props('flat')
                     
                     ui.separator().classes('my-2')
                     
-                    # Section thème améliorée
-                    ui.label('Apparence').classes('text-sm font-semibold text-main mb-2')
+                    # Section langue
+                    ui.label('Langue').classes('text-sm font-semibold text-main mb-2')
                     
-                    # Info thème actuel
-                    theme_status = self.get_theme_status_display()
-                    ui.label(theme_status).classes('text-xs text-muted mb-3')
+                    if self.language_selector:
+                        try:
+                            self.language_selector.render_buttons()
+                        except:
+                            self._render_simple_language_fallback()
+                    else:
+                        self._render_simple_language_fallback()
                     
-                    # Bouton thème dans le menu mobile
+                    ui.separator().classes('my-2')
+                    
+                    # Section thème
+                    ui.label('Thème').classes('text-sm font-semibold text-main mb-2')
+                    
+                    current_theme_name = "Clair" if self.current_theme == "light" else "Sombre"
+                    next_theme_name = "Sombre" if self.current_theme == "light" else "Clair"
+                    theme_icon = 'dark_mode' if self.current_theme == 'light' else 'light_mode'
+                    
+                    ui.label(f'Thème actuel: {current_theme_name}').classes('text-sm text-muted mb-2')
+                    
                     ui.button(
-                        f'{self.get_theme_icon()} {self.get_theme_name()}',
+                        f'{theme_icon} Basculer vers {next_theme_name}',
                         on_click=lambda: (self._handle_theme_toggle(), dialog.close())
                     ).classes('w-full justify-start text-muted hover:text-primary hover:bg-surface').props('flat')
         
         dialog.open()
-    
-    def get_theme_icon(self) -> str:
-        """Obtenir l'icône selon la préférence de thème"""
-        if self.theme_preference == "auto":
-            return 'brightness_auto'  # Icône auto
-        elif self.theme_preference == "light":
-            return 'light_mode'       # Icône soleil
-        else:  # dark
-            return 'dark_mode'        # Icône lune
-    
-    def get_theme_tooltip(self) -> str:
-        """Obtenir le tooltip du bouton de thème"""
-        if self.theme_preference == "auto":
-            system_name = "sombre" if theme_manager.system_theme.value == "dark" else "clair"
-            return f"Thème automatique (actuellement {system_name})"
-        elif self.theme_preference == "light":
-            return "Thème clair"
-        else:
-            return "Thème sombre"
-    
-    def get_theme_name(self) -> str:
-        """Obtenir le nom du thème pour l'affichage"""
-        if self.theme_preference == "auto":
-            return "Automatique"
-        elif self.theme_preference == "light":
-            return "Clair"
-        else:
-            return "Sombre"
-    
-    def get_theme_status_display(self) -> str:
-        """Obtenir un affichage du statut pour le menu mobile"""
-        if self.theme_preference == "auto":
-            system_name = "sombre" if theme_manager.system_theme.value == "dark" else "clair"
-            return f"Suit le système ({system_name})"
-        elif self.theme_preference == "light":
-            return "Forcé en mode clair"
-        else:
-            return "Forcé en mode sombre"
     
     def add_nav_item(self, label: str, url: str, icon: str = None):
         """Ajouter un élément de navigation"""
@@ -213,7 +219,7 @@ class Navbar:
         return self
     
     def _add_responsive_css(self):
-        """CSS responsive simplifié utilisant les variables de thème"""
+        """CSS responsive pour la navbar"""
         ui.add_head_html("""
         <style>
         /* === NAVBAR RESPONSIVE === */
@@ -224,7 +230,6 @@ class Navbar:
             border-bottom: 1px solid var(--theme-border);
         }
         
-        /* Container avec largeur adaptative */
         .navbar-container {
             max-width: 1200px;
             padding-left: var(--spacing-lg);
@@ -239,23 +244,6 @@ class Navbar:
             }
         }
         
-        @media (min-width: 1401px) {
-            .navbar-container {
-                max-width: 1600px;
-                padding-left: var(--spacing-2xl);
-                padding-right: var(--spacing-2xl);
-            }
-        }
-        
-        @media (min-width: 1601px) {
-            .navbar-container {
-                max-width: 90%;
-                padding-left: var(--spacing-3xl);
-                padding-right: var(--spacing-3xl);
-            }
-        }
-        
-        /* Logo */
         .logo-text {
             display: flex;
             align-items: center;
@@ -267,7 +255,6 @@ class Navbar:
             text-decoration: none !important;
         }
         
-        /* Navigation desktop */
         .desktop-nav {
             display: flex;
             align-items: center;
@@ -275,29 +262,6 @@ class Navbar:
             height: 4rem;
         }
         
-        @media (min-width: 1201px) {
-            .desktop-nav {
-                gap: var(--spacing-xl);
-            }
-            
-            .nav-link {
-                padding: 0.75rem 1rem;
-                font-size: 1rem;
-            }
-        }
-        
-        @media (min-width: 1401px) {
-            .desktop-nav {
-                gap: 2.5rem;
-            }
-            
-            .nav-link {
-                padding: 0.75rem 1.25rem;
-                font-size: 1.05rem;
-            }
-        }
-        
-        /* Liens de navigation */
         .nav-link {
             border-radius: var(--radius-md);
             font-weight: 500;
@@ -313,7 +277,6 @@ class Navbar:
             text-decoration: none !important;
         }
         
-        /* Effet de soulignement au hover */
         .nav-link::after {
             content: '';
             position: absolute;
@@ -330,7 +293,6 @@ class Navbar:
             width: 80%;
         }
         
-        /* Actions container */
         .actions-container {
             display: flex;
             align-items: center;
@@ -338,7 +300,11 @@ class Navbar:
             height: 4rem;
         }
         
-        /* Bouton menu mobile - masqué par défaut */
+        .language-selector-desktop {
+            display: flex;
+            align-items: center;
+        }
+        
         .mobile-menu-btn {
             display: none !important;
         }
@@ -346,6 +312,10 @@ class Navbar:
         /* RESPONSIVE Mobile */
         @media (max-width: 768px) {
             .desktop-nav {
+                display: none !important;
+            }
+            
+            .language-selector-desktop {
                 display: none !important;
             }
             
@@ -365,14 +335,6 @@ class Navbar:
                 padding-left: var(--spacing-md) !important;
                 padding-right: var(--spacing-md) !important;
             }
-            
-            .navbar .q-toolbar {
-                min-height: 3.5rem !important;
-            }
-            
-            .desktop-nav, .actions-container, .logo-text {
-                height: 3.5rem;
-            }
         }
         
         @media (min-width: 769px) {
@@ -382,6 +344,10 @@ class Navbar:
             }
             
             .desktop-nav {
+                display: flex !important;
+            }
+            
+            .language-selector-desktop {
                 display: flex !important;
             }
         }
@@ -395,62 +361,8 @@ class Navbar:
             .logo-text {
                 font-size: 1.125rem !important;
             }
-            
-            .navbar .q-toolbar {
-                min-height: 3rem !important;
-            }
-            
-            .desktop-nav, .actions-container, .logo-text {
-                height: 3rem;
-            }
         }
         
-        /* Tablettes */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .navbar-container {
-                max-width: 1024px;
-                padding-left: var(--spacing-lg);
-                padding-right: var(--spacing-lg);
-            }
-            
-            .desktop-nav {
-                gap: var(--spacing-md);
-            }
-            
-            .nav-link {
-                padding: 0.375rem 0.5rem;
-                font-size: 0.875rem;
-            }
-        }
-        
-        /* Fix pour NiceGUI */
-        .navbar .q-toolbar {
-            min-height: 4rem !important;
-            padding: 0 !important;
-        }
-        
-        .navbar .q-toolbar__title {
-            display: none !important;
-        }
-        
-        .navbar button {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-        
-        .navbar .q-layout {
-            min-height: auto !important;
-        }
-        
-        /* Améliorer l'accessibilité */
-        .nav-link:focus,
-        .mobile-menu-btn:focus {
-            outline: 2px solid var(--theme-border-focus);
-            outline-offset: 2px;
-        }
-        
-        /* Dialog mobile responsive */
         .mobile-dialog .q-dialog__inner {
             padding: var(--spacing-md);
         }
@@ -462,7 +374,6 @@ class Navbar:
             }
         }
         
-        /* Override des styles par défaut */
         .navbar a::before,
         .navbar .q-link::before,
         .navbar .nicegui-link::before {
@@ -474,7 +385,6 @@ class Navbar:
             text-decoration: none !important;
         }
         
-        /* Tooltip styling */
         .q-tooltip {
             background-color: var(--theme-surface-elevated) !important;
             color: var(--theme-text) !important;

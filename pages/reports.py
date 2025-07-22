@@ -1,16 +1,16 @@
 from nicegui import ui
 from core.i18n import i18n, _
-from core.components import Card, Button, Pagination
+from core.theme import theme_manager
+from config.database import SessionLocal, ReportService, Report
 from typing import List, Dict, Optional
 import json
-from pathlib import Path
 
 class ReportsPage:
-    """Page des rapports"""
+    """Page des rapports utilisant la base de données"""
     
     def __init__(self):
-        self.reports = self.load_reports()
-        self.filtered_reports = self.reports.copy()
+        self.reports = []
+        self.filtered_reports = []
         self.current_page = 1
         self.items_per_page = 4
         self.current_type = "all"
@@ -18,114 +18,147 @@ class ReportsPage:
         self.search_query = ""
         
         self.report_types = {
-            "all": _("articles.filters.all"),
-            "research": _("reports.types.research"),
-            "survey": _("reports.types.survey"),
-            "analysis": _("reports.types.analysis"),
-            "white_paper": _("reports.types.white_paper")
+            "all": "Tous les types",
+            "research": "Recherche",
+            "survey": "Enquête", 
+            "analysis": "Analyse",
+            "white_paper": "Livre blanc"
         }
         
         self.sort_options = {
-            "newest": _("articles.sort.newest"),
-            "oldest": _("articles.sort.oldest"),
-            "popular": _("articles.sort.popular"),
-            "title": _("articles.sort.title")
+            "newest": "Plus récents",
+            "oldest": "Plus anciens",
+            "popular": "Plus populaires",
+            "title": "Par titre"
         }
+        
+        # Charger les rapports depuis la base de données
+        self.load_reports_from_db()
+        self.filter_reports()
     
-    def load_reports(self) -> List[Dict]:
-        """Charger les rapports depuis le fichier JSON"""
-        reports_file = Path("data/reports.json")
+    def load_reports_from_db(self):
+        """Charger les rapports depuis la base de données"""
+        try:
+            db = SessionLocal()
+            db_reports = ReportService.get_all(db)
+            
+            # Convertir les objets SQLAlchemy en dictionnaires
+            self.reports = []
+            for report in db_reports:
+                report_dict = {
+                    "id": report.id,
+                    "title": report.title,
+                    "description": report.description,
+                    "abstract": report.abstract,
+                    "type": report.type,
+                    "author": report.author,
+                    "date": report.date_created.strftime("%Y-%m-%d") if report.date_created else "",
+                    "pages": report.pages or 0,
+                    "downloads": report.downloads or 0,
+                    "file_size": report.file_size or "0 MB",
+                    "file_url": report.file_url or "",
+                    "cover_image": report.cover_image,
+                    "tags": json.loads(report.tags) if report.tags else [],
+                    "featured": report.featured or False,
+                    "published": report.published or True
+                }
+                self.reports.append(report_dict)
+            
+            db.close()
+            print(f"✅ {len(self.reports)} rapports chargés depuis la base de données")
+            
+        except Exception as e:
+            print(f"❌ Erreur lors du chargement des rapports: {e}")
+            self.reports = []
+    
+    def get_reports_by_type(self, report_type: str):
+        """Obtenir les rapports d'un type spécifique depuis la BDD"""
+        if report_type == "all":
+            return self.reports
         
-        if reports_file.exists():
-            try:
-                with open(reports_file, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-            except Exception as e:
-                print(f"Erreur lors du chargement des rapports: {e}")
+        try:
+            db = SessionLocal()
+            db_reports = ReportService.get_by_type(db, report_type)
+            
+            filtered_reports = []
+            for report in db_reports:
+                report_dict = {
+                    "id": report.id,
+                    "title": report.title,
+                    "description": report.description,
+                    "abstract": report.abstract,
+                    "type": report.type,
+                    "author": report.author,
+                    "date": report.date_created.strftime("%Y-%m-%d") if report.date_created else "",
+                    "pages": report.pages or 0,
+                    "downloads": report.downloads or 0,
+                    "file_size": report.file_size or "0 MB",
+                    "file_url": report.file_url or "",
+                    "cover_image": report.cover_image,
+                    "tags": json.loads(report.tags) if report.tags else [],
+                    "featured": report.featured or False,
+                    "published": report.published or True
+                }
+                filtered_reports.append(report_dict)
+            
+            db.close()
+            return filtered_reports
+            
+        except Exception as e:
+            print(f"❌ Erreur lors du filtrage par type: {e}")
+            return []
+    
+    def get_featured_reports(self):
+        """Obtenir les rapports en vedette"""
+        try:
+            db = SessionLocal()
+            db_reports = ReportService.get_featured(db)
+            
+            featured_reports = []
+            for report in db_reports:
+                report_dict = {
+                    "id": report.id,
+                    "title": report.title,
+                    "description": report.description,
+                    "abstract": report.abstract,
+                    "type": report.type,
+                    "author": report.author,
+                    "date": report.date_created.strftime("%Y-%m-%d") if report.date_created else "",
+                    "pages": report.pages or 0,
+                    "downloads": report.downloads or 0,
+                    "file_size": report.file_size or "0 MB",
+                    "file_url": report.file_url or "",
+                    "cover_image": report.cover_image,
+                    "tags": json.loads(report.tags) if report.tags else [],
+                    "featured": report.featured or False,
+                    "published": report.published or True
+                }
+                featured_reports.append(report_dict)
+            
+            db.close()
+            return featured_reports
+            
+        except Exception as e:
+            print(f"❌ Erreur lors du chargement des rapports en vedette: {e}")
+            return []
+    
+    def search_reports(self, query: str):
+        """Rechercher des rapports dans la base de données"""
+        if not query.strip():
+            return self.reports
         
-        # Rapports d'exemple si le fichier n'existe pas
-        return [
-            {
-                "id": 1,
-                "title": "État de la santé mentale au Maroc 2024",
-                "description": "Rapport complet sur l'état de la santé mentale au Maroc avec statistiques et analyses.",
-                "type": "research",
-                "author": "Institut National de Recherche",
-                "date": "2024-01-20",
-                "pages": 156,
-                "downloads": 2500,
-                "file_size": "12.5 MB",
-                "file_url": "/static/reports/mental_health_morocco_2024.pdf",
-                "cover_image": "/static/images/report1.jpg",
-                "tags": ["statistiques", "Maroc", "santé mentale", "recherche"],
-                "featured": True,
-                "abstract": "Ce rapport présente une analyse complète de l'état de la santé mentale au Maroc..."
-            },
-            {
-                "id": 2,
-                "title": "Enquête sur l'anxiété chez les étudiants",
-                "description": "Étude approfondie sur les niveaux d'anxiété chez les étudiants universitaires.",
-                "type": "survey",
-                "author": "Dr. Fatima Bennani",
-                "date": "2024-01-15",
-                "pages": 89,
-                "downloads": 1800,
-                "file_size": "8.2 MB",
-                "file_url": "/static/reports/student_anxiety_survey.pdf",
-                "cover_image": "/static/images/report2.jpg",
-                "tags": ["anxiété", "étudiants", "enquête", "université"],
-                "featured": False,
-                "abstract": "Cette enquête examine les facteurs contribuant à l'anxiété chez les étudiants..."
-            },
-            {
-                "id": 3,
-                "title": "Analyse des troubles du sommeil",
-                "description": "Rapport détaillé sur les troubles du sommeil et leur impact sur la santé mentale.",
-                "type": "analysis",
-                "author": "Centre du Sommeil",
-                "date": "2024-01-10",
-                "pages": 123,
-                "downloads": 1200,
-                "file_size": "15.8 MB",
-                "file_url": "/static/reports/sleep_disorders_analysis.pdf",
-                "cover_image": "/static/images/report3.jpg",
-                "tags": ["sommeil", "troubles", "analyse", "santé"],
-                "featured": True,
-                "abstract": "Une analyse approfondie des troubles du sommeil les plus courants..."
-            },
-            {
-                "id": 4,
-                "title": "Livre blanc: Télémédecine en santé mentale",
-                "description": "Guide complet sur l'implémentation de la télémédecine en santé mentale.",
-                "type": "white_paper",
-                "author": "Association des Psychologues",
-                "date": "2024-01-05",
-                "pages": 67,
-                "downloads": 950,
-                "file_size": "6.4 MB",
-                "file_url": "/static/reports/telemedicine_white_paper.pdf",
-                "cover_image": "/static/images/report4.jpg",
-                "tags": ["télémédecine", "technologie", "innovation", "guide"],
-                "featured": False,
-                "abstract": "Ce livre blanc explore les opportunités et défis de la télémédecine..."
-            },
-            {
-                "id": 5,
-                "title": "Recherche sur la dépression post-partum",
-                "description": "Étude sur la prévalence et les traitements de la dépression post-partum.",
-                "type": "research",
-                "author": "Dr. Amina Tazi",
-                "date": "2023-12-28",
-                "pages": 201,
-                "downloads": 3200,
-                "file_size": "18.7 MB",
-                "file_url": "/static/reports/postpartum_depression_research.pdf",
-                "cover_image": "/static/images/report5.jpg",
-                "tags": ["dépression", "post-partum", "maternité", "recherche"],
-                "featured": True,
-                "abstract": "Cette recherche examine les facteurs de risque et les interventions..."
-            }
-        ]
+        # Recherche simple dans le titre, description et tags
+        query_lower = query.lower()
+        results = []
+        
+        for report in self.reports:
+            if (query_lower in report["title"].lower() or 
+                query_lower in report["description"].lower() or
+                (report["abstract"] and query_lower in report["abstract"].lower()) or
+                any(query_lower in tag.lower() for tag in report["tags"])):
+                results.append(report)
+        
+        return results
     
     def filter_reports(self):
         """Filtrer les rapports selon les critères"""
@@ -137,11 +170,9 @@ class ReportsPage:
         
         # Filtrer par recherche
         if self.search_query:
-            query = self.search_query.lower()
-            filtered = [r for r in filtered if 
-                       query in r["title"].lower() or 
-                       query in r["description"].lower() or 
-                       any(query in tag.lower() for tag in r["tags"])]
+            filtered = self.search_reports(self.search_query)
+            if self.current_type != "all":
+                filtered = [r for r in filtered if r["type"] == self.current_type]
         
         # Trier
         if self.current_sort == "newest":
@@ -190,17 +221,17 @@ class ReportsPage:
     
     def render_header(self):
         """Rendre l'en-tête de la page"""
-        with ui.column().classes('theme-gradient py-16 px-4'):
-            with ui.column().classes('max-w-4xl mx-auto text-center'):
-                ui.label(_("reports.title")).classes('text-5xl font-bold text-white mb-4')
-                ui.label(_("reports.subtitle")).classes('text-xl text-white opacity-90')
+        with ui.column().classes('gradient-hero py-16 px-4'):
+            with ui.column().classes('max-w-4xl mx-auto text-center text-inverse'):
+                ui.label("Rapports").classes('text-5xl font-bold mb-4')
+                ui.label("Découvrez nos rapports et études en santé mentale").classes('text-xl opacity-90')
     
     def render_filters(self):
         """Rendre les filtres principaux"""
-        with ui.row().classes('max-w-7xl mx-auto px-4 py-6 gap-4 flex-wrap items-center'):
+        with ui.row().classes('max-w-7xl mx-auto px-4 py-6 gap-4 flex-wrap items-center bg-card'):
             # Recherche
             search_input = ui.input(
-                placeholder=_("common.search"),
+                placeholder="Rechercher dans les rapports...",
                 value=self.search_query
             ).classes('flex-1 min-w-64')
             search_input.on('input', lambda e: self.on_search_change(e.value))
@@ -217,33 +248,38 @@ class ReportsPage:
             sort_select = ui.select(
                 options=self.sort_options,
                 value=self.current_sort,
-                label=_("common.sort")
+                label="Trier par"
             ).classes('w-48')
             sort_select.on('change', lambda e: self.on_sort_change(e.value))
     
     def render_sidebar(self):
         """Rendre la sidebar"""
-        with ui.card().classes('w-full theme-surface'):
+        with ui.card().classes(theme_manager.get_card_classes()):
             with ui.card_section().classes('p-6'):
-                ui.label("Statistiques").classes('text-lg font-semibold theme-text mb-4')
+                ui.label("Statistiques").classes('text-lg font-semibold text-main mb-4')
                 
                 # Stats générales
                 total_reports = len(self.reports)
                 total_downloads = sum(r["downloads"] for r in self.reports)
+                total_pages = sum(r["pages"] for r in self.reports)
                 
                 with ui.column().classes('gap-3'):
                     with ui.row().classes('items-center gap-2'):
                         ui.icon('description').classes('text-primary')
-                        ui.label(f"{total_reports} rapports").classes('theme-text')
+                        ui.label(f"{total_reports} rapports").classes('text-main')
                     
                     with ui.row().classes('items-center gap-2'):
                         ui.icon('download').classes('text-primary')
-                        ui.label(f"{total_downloads:,} téléchargements").classes('theme-text')
+                        ui.label(f"{total_downloads:,} téléchargements").classes('text-main')
+                    
+                    with ui.row().classes('items-center gap-2'):
+                        ui.icon('menu_book').classes('text-primary')
+                        ui.label(f"{total_pages:,} pages au total").classes('text-main')
                 
                 ui.separator().classes('my-4')
                 
                 # Types de rapports
-                ui.label("Types").classes('font-medium theme-text mb-2')
+                ui.label("Types").classes('font-medium text-main mb-2')
                 
                 type_counts = {}
                 for report in self.reports:
@@ -255,7 +291,7 @@ class ReportsPage:
                         ui.button(
                             f"{type_name} ({count})",
                             on_click=lambda t=type_key: self.filter_by_type(t)
-                        ).classes('text-left justify-start text-sm theme-text-secondary hover:text-primary').props('flat')
+                        ).classes('text-left justify-start text-sm text-muted hover:text-primary').props('flat')
     
     def render_reports_grid(self):
         """Rendre la grille des rapports"""
@@ -265,20 +301,27 @@ class ReportsPage:
             self.render_empty_state()
             return
         
+        # Info pagination
+        total_filtered = len(self.filtered_reports)
+        start_item = (self.current_page - 1) * self.items_per_page + 1
+        end_item = min(self.current_page * self.items_per_page, total_filtered)
+        
+        ui.label(f'Affichage de {start_item}-{end_item} sur {total_filtered} rapports').classes('text-sm text-muted mb-6')
+        
         with ui.column().classes('gap-6'):
             for report in reports:
                 self.render_report_card(report)
     
     def render_report_card(self, report: Dict):
         """Rendre une carte de rapport"""
-        with ui.card().classes('theme-surface hover-lift transition-all duration-300'):
+        with ui.card().classes(theme_manager.get_card_classes(hover=True)):
             with ui.row().classes('p-6 gap-6'):
-                # Image de couverture
+                # Image de couverture ou placeholder
                 if report.get("cover_image"):
                     ui.image(report["cover_image"]).classes('w-32 h-40 object-cover rounded-lg shadow-md')
                 else:
-                    with ui.column().classes('w-32 h-40 bg-gray-200 rounded-lg items-center justify-center'):
-                        ui.icon('description').classes('text-4xl text-gray-500')
+                    with ui.column().classes('w-32 h-40 bg-surface rounded-lg items-center justify-center'):
+                        ui.icon('description').classes('text-4xl text-muted')
                 
                 # Contenu
                 with ui.column().classes('flex-1'):
@@ -293,96 +336,122 @@ class ReportsPage:
                                 ).classes('text-xs')
                                 
                                 if report.get("featured"):
-                                    ui.chip("Featured", color='accent').classes('text-xs')
+                                    ui.chip("⭐ En vedette", color='accent').classes('text-xs')
                             
                             # Titre
-                            ui.label(report["title"]).classes('text-2xl font-bold theme-text mb-2')
+                            ui.label(report["title"]).classes('text-2xl font-bold text-main mb-2 line-clamp-2')
                             
                             # Auteur et date
-                            with ui.row().classes('items-center gap-4 text-sm theme-text-secondary mb-3'):
+                            with ui.row().classes('items-center gap-4 text-sm text-muted mb-3'):
                                 ui.label(f"👤 {report['author']}")
                                 ui.label(f"📅 {report['date']}")
                         
                         # Métriques
                         with ui.column().classes('text-right'):
-                            ui.label(f"📊 {report['downloads']:,} téléchargements").classes('text-sm theme-text-secondary')
-                            ui.label(f"📄 {report['pages']} pages").classes('text-sm theme-text-secondary')
-                            ui.label(f"💾 {report['file_size']}").classes('text-sm theme-text-secondary')
+                            ui.label(f"📊 {report['downloads']:,} téléchargements").classes('text-sm text-muted')
+                            ui.label(f"📄 {report['pages']} pages").classes('text-sm text-muted')
+                            ui.label(f"💾 {report['file_size']}").classes('text-sm text-muted')
                     
                     # Description
-                    ui.label(report["description"]).classes('theme-text-secondary mb-4 line-clamp-2')
+                    ui.label(report["description"]).classes('text-muted mb-4 line-clamp-2')
                     
                     # Abstract (si disponible)
                     if report.get("abstract"):
-                        ui.label(report["abstract"]).classes('theme-text-secondary text-sm mb-4 line-clamp-3')
+                        ui.label(report["abstract"]).classes('text-muted text-sm mb-4 line-clamp-3')
                     
                     # Tags
                     with ui.row().classes('gap-1 mb-4 flex-wrap'):
                         for tag in report["tags"][:4]:
-                            ui.chip(f"#{tag}").classes('text-xs theme-text-secondary')
+                            ui.chip(f"#{tag}").classes('text-xs text-muted bg-surface')
                     
                     # Actions
                     with ui.row().classes('gap-3'):
                         ui.button(
-                            _("reports.card.download"),
+                            "Télécharger",
                             on_click=lambda r=report: self.download_report(r),
                             icon='download'
-                        ).classes('bg-primary text-white px-4 py-2 rounded hover:bg-secondary transition-colors')
+                        ).classes(theme_manager.get_button_classes('primary', 'md'))
                         
                         ui.button(
-                            _("reports.card.view"),
+                            "Aperçu",
                             on_click=lambda r=report: self.view_report(r),
                             icon='visibility'
-                        ).classes('border border-primary text-primary px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors')
+                        ).classes(theme_manager.get_button_classes('outline', 'md'))
     
     def render_empty_state(self):
         """Rendre l'état vide"""
         with ui.column().classes('items-center justify-center py-16 text-center'):
-            ui.icon('description').classes('text-6xl theme-text-secondary mb-4')
-            ui.label(_("reports.empty")).classes('text-xl theme-text-secondary mb-4')
+            ui.icon('description').classes('text-6xl text-muted mb-4')
+            ui.label("Aucun rapport trouvé").classes('text-xl text-muted mb-4')
             ui.button(
                 "Voir tous les rapports",
                 on_click=self.reset_filters
-            ).classes('bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition-colors')
+            ).classes(theme_manager.get_button_classes('primary', 'md'))
     
     def render_pagination(self):
-        """Rendre la pagination"""
-        with ui.row().classes('justify-center mt-8'):
-            pagination = Pagination(
-                current_page=self.current_page,
-                total_pages=self.get_total_pages(),
-                on_page_change=self.on_page_change
-            )
-            pagination.render()
+        """Rendre la pagination simple"""
+        total_pages = self.get_total_pages()
+        
+        with ui.row().classes('justify-center items-center gap-4 mt-8'):
+            # Bouton précédent
+            ui.button(
+                "Précédent",
+                on_click=lambda: self.change_page(self.current_page - 1),
+                icon='chevron_left'
+            ).classes('').props('outline').set_enabled(self.current_page > 1)
+            
+            # Numéros de page
+            for page in range(max(1, self.current_page - 2), min(total_pages + 1, self.current_page + 3)):
+                if page == self.current_page:
+                    ui.button(
+                        str(page),
+                        on_click=lambda p=page: self.change_page(p)
+                    ).classes(theme_manager.get_button_classes('primary', 'md'))
+                else:
+                    ui.button(
+                        str(page),
+                        on_click=lambda p=page: self.change_page(p)
+                    ).classes('').props('outline')
+            
+            # Bouton suivant
+            ui.button(
+                "Suivant",
+                on_click=lambda: self.change_page(self.current_page + 1),
+                icon='chevron_right'
+            ).classes('').props('outline').set_enabled(self.current_page < total_pages)
+            
+            # Info page
+            ui.label(f'Page {self.current_page} sur {total_pages}').classes('text-sm text-muted ml-4')
+    
+    def change_page(self, page: int):
+        """Changer de page"""
+        if 1 <= page <= self.get_total_pages():
+            self.current_page = page
+            ui.notify(f'Page {page}', type='info')
     
     def on_search_change(self, query: str):
         """Gérer le changement de recherche"""
         self.search_query = query
         self.filter_reports()
-        self.update_reports_display()
+        ui.notify('Recherche mise à jour', type='info')
     
     def on_type_change(self, report_type: str):
         """Gérer le changement de type"""
         self.current_type = report_type
         self.filter_reports()
-        self.update_reports_display()
+        ui.notify(f'Filtrage par type: {self.report_types[report_type]}', type='info')
     
     def on_sort_change(self, sort_option: str):
         """Gérer le changement de tri"""
         self.current_sort = sort_option
         self.filter_reports()
-        self.update_reports_display()
-    
-    def on_page_change(self, page: int):
-        """Gérer le changement de page"""
-        self.current_page = page
-        self.update_reports_display()
+        ui.notify(f'Tri: {self.sort_options[sort_option]}', type='info')
     
     def filter_by_type(self, report_type: str):
-        """Filtrer par type"""
+        """Filtrer par type depuis la sidebar"""
         self.current_type = report_type
         self.filter_reports()
-        self.update_reports_display()
+        ui.notify(f'Filtrage par type: {self.report_types[report_type]}', type='info')
     
     def reset_filters(self):
         """Réinitialiser tous les filtres"""
@@ -391,27 +460,39 @@ class ReportsPage:
         self.search_query = ""
         self.current_page = 1
         self.filter_reports()
-        self.update_reports_display()
+        ui.notify('Filtres réinitialisés', type='info')
     
     def download_report(self, report: Dict):
         """Télécharger un rapport"""
+        # Incrémenter le nombre de téléchargements dans la BDD
+        self.increment_report_downloads(report["id"])
+        
         # Simuler le téléchargement
         ui.notify(f"Téléchargement de '{report['title']}' commencé", type='positive')
         
         # Dans une vraie application, on déclencherait le téléchargement
-        ui.run_javascript(f"""
-            const link = document.createElement('a');
-            link.href = '{report['file_url']}';
-            link.download = '{report['title']}.pdf';
-            link.click();
-        """)
+        if report.get('file_url'):
+            ui.run_javascript(f"""
+                const link = document.createElement('a');
+                link.href = '{report['file_url']}';
+                link.download = '{report['title']}.pdf';
+                link.click();
+            """)
     
     def view_report(self, report: Dict):
         """Voir un rapport"""
-        # Naviguer vers la page de visualisation du rapport
-        ui.navigate.to(f'/report/{report["id"]}')
+        ui.notify(f"Aperçu de '{report['title']}'", type='info')
+        # Dans une vraie app: ui.navigate.to(f'/report/{report["id"]}')
     
-    def update_reports_display(self):
-        """Mettre à jour l'affichage des rapports"""
-        # Solution temporaire - dans une vraie application, on utiliserait un système de state
-        ui.run_javascript('window.location.reload()')
+    def increment_report_downloads(self, report_id: int):
+        """Incrémenter le nombre de téléchargements d'un rapport"""
+        try:
+            db = SessionLocal()
+            report = db.query(Report).filter_by(id=report_id).first()
+            if report:
+                report.downloads = (report.downloads or 0) + 1
+                db.commit()
+                print(f"✅ Téléchargements incrémentés pour le rapport {report_id}")
+            db.close()
+        except Exception as e:
+            print(f"❌ Erreur lors de l'incrémentation des téléchargements: {e}")

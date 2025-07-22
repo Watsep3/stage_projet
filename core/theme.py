@@ -8,63 +8,56 @@ class Theme(Enum):
     LIGHT = "light"
     DARK = "dark"
 
-class ThemePreference(Enum):
-    """Préférences de thème"""
-    AUTO = "auto"  # Suit le système
-    LIGHT = "light"  # Forcé en clair
-    DARK = "dark"   # Forcé en sombre
-
 class ThemeManager:
     def __init__(self):
-        # État du thème
+        # État du thème - initialisé avec le thème système
         self.current_theme = Theme.LIGHT
-        self.theme_preference = ThemePreference.AUTO  # Par défaut, suit le système
-        self.system_theme = Theme.LIGHT  # Thème détecté du système
+        self.system_theme_detected = False
         
-        # Palette de couleurs centralisée (votre code existant)
+        # Palette de couleurs centralisée
         self.theme_colors = {
             Theme.LIGHT: {
                 # Couleurs principales
-                'primary': '#10b981',        # Vert principal
-                'primary_dark': '#059669',   # Vert foncé pour hover
-                'primary_light': '#34d399',  # Vert clair
-                'secondary': '#6366f1',      # Indigo
-                'secondary_dark': '#4f46e5', # Indigo foncé
-                'accent': '#f59e0b',         # Amber
+                'primary': '#10b981',
+                'primary_dark': '#059669',
+                'primary_light': '#34d399',
+                'secondary': '#6366f1',
+                'secondary_dark': '#4f46e5',
+                'accent': '#f59e0b',
                 
                 # Couleurs de fond et surface
                 'background': '#ffffff',
-                'surface': '#f8fafc',        # Gris très clair
+                'surface': '#f8fafc',
                 'surface_elevated': '#ffffff',
                 'card_background': '#ffffff',
                 
                 # Texte
-                'text': '#1f2937',           # Gris très foncé
-                'text_secondary': '#6b7280', # Gris moyen
-                'text_muted': '#9ca3af',     # Gris clair
-                'text_inverse': '#ffffff',   # Blanc pour contraste
+                'text': '#1f2937',
+                'text_secondary': '#6b7280',
+                'text_muted': '#9ca3af',
+                'text_inverse': '#ffffff',
                 
                 # Bordures
-                'border': '#e5e7eb',         # Gris clair pour bordures
-                'border_focus': '#10b981',   # Vert pour focus
-                'divider': '#f3f4f6',        # Gris très clair pour dividers
+                'border': '#e5e7eb',
+                'border_focus': '#10b981',
+                'divider': '#f3f4f6',
                 
                 # États
-                'success': '#10b981',        # Vert
-                'warning': '#f59e0b',        # Amber
-                'error': '#ef4444',          # Rouge
-                'info': '#3b82f6',           # Bleu
+                'success': '#10b981',
+                'warning': '#f59e0b',
+                'error': '#ef4444',
+                'info': '#3b82f6',
                 
                 # États de couleur de fond
-                'success_bg': '#f0fdf4',     # Vert très clair
-                'warning_bg': '#fffbeb',     # Amber très clair
-                'error_bg': '#fef2f2',       # Rouge très clair
-                'info_bg': '#eff6ff',        # Bleu très clair
+                'success_bg': '#f0fdf4',
+                'warning_bg': '#fffbeb',
+                'error_bg': '#fef2f2',
+                'info_bg': '#eff6ff',
                 
                 # Hover states
-                'hover': '#f9fafb',          # Gris très léger
-                'hover_primary': '#059669',  # Vert foncé
-                'hover_secondary': '#4f46e5', # Indigo foncé
+                'hover': '#f9fafb',
+                'hover_primary': '#059669',
+                'hover_secondary': '#4f46e5',
                 
                 # Gradients
                 'gradient_primary': 'linear-gradient(135deg, #10b981, #34d399)',
@@ -74,46 +67,46 @@ class ThemeManager:
             
             Theme.DARK: {
                 # Couleurs principales (adaptées pour le dark mode)
-                'primary': '#34d399',        # Vert plus clair pour le dark
-                'primary_dark': '#10b981',   # Vert standard pour hover
-                'primary_light': '#6ee7b7',  # Vert très clair
-                'secondary': '#818cf8',      # Indigo plus clair
-                'secondary_dark': '#6366f1', # Indigo standard
-                'accent': '#fbbf24',         # Amber plus clair
+                'primary': '#34d399',
+                'primary_dark': '#10b981',
+                'primary_light': '#6ee7b7',
+                'secondary': '#818cf8',
+                'secondary_dark': '#6366f1',
+                'accent': '#fbbf24',
                 
                 # Couleurs de fond et surface
-                'background': '#111827',     # Gris très foncé
-                'surface': '#1f2937',        # Gris foncé
-                'surface_elevated': '#374151', # Gris moyen foncé
-                'card_background': '#1f2937',
+                'background': '#0f172a',  # Très sombre
+                'surface': '#1e293b',     # Sombre
+                'surface_elevated': '#334155', # Moyen sombre
+                'card_background': '#1e293b',
                 
                 # Texte
-                'text': '#f9fafb',           # Blanc cassé
-                'text_secondary': '#d1d5db', # Gris clair
-                'text_muted': '#9ca3af',     # Gris moyen
-                'text_inverse': '#111827',   # Noir pour contraste
+                'text': '#f1f5f9',           # Blanc cassé
+                'text_secondary': '#cbd5e1', # Gris clair
+                'text_muted': '#94a3b8',     # Gris moyen
+                'text_inverse': '#0f172a',   # Noir pour contraste
                 
                 # Bordures
-                'border': '#374151',         # Gris moyen pour bordures
+                'border': '#334155',         # Gris moyen pour bordures
                 'border_focus': '#34d399',   # Vert pour focus
-                'divider': '#374151',        # Gris moyen pour dividers
+                'divider': '#334155',        # Gris moyen pour dividers
                 
                 # États
-                'success': '#34d399',        # Vert clair
-                'warning': '#fbbf24',        # Amber clair
-                'error': '#f87171',          # Rouge clair
-                'info': '#60a5fa',           # Bleu clair
+                'success': '#34d399',
+                'warning': '#fbbf24',
+                'error': '#f87171',
+                'info': '#60a5fa',
                 
                 # États de couleur de fond
-                'success_bg': '#064e3b',     # Vert très foncé
-                'warning_bg': '#78350f',     # Amber très foncé
-                'error_bg': '#7f1d1d',       # Rouge très foncé
-                'info_bg': '#1e3a8a',        # Bleu très foncé
+                'success_bg': '#064e3b',
+                'warning_bg': '#78350f',
+                'error_bg': '#7f1d1d',
+                'info_bg': '#1e3a8a',
                 
                 # Hover states
-                'hover': '#374151',          # Gris moyen
-                'hover_primary': '#10b981',  # Vert standard
-                'hover_secondary': '#6366f1', # Indigo standard
+                'hover': '#334155',
+                'hover_primary': '#10b981',
+                'hover_secondary': '#6366f1',
                 
                 # Gradients
                 'gradient_primary': 'linear-gradient(135deg, #34d399, #6ee7b7)',
@@ -122,30 +115,17 @@ class ThemeManager:
             }
         }
         
-        # Tailles et espacements centralisés (votre code existant)
+        # Tailles et espacements centralisés
         self.spacing = {
-            'xs': '0.25rem',    # 4px
-            'sm': '0.5rem',     # 8px
-            'md': '1rem',       # 16px
-            'lg': '1.5rem',     # 24px
-            'xl': '2rem',       # 32px
-            '2xl': '2.5rem',    # 40px
-            '3xl': '3rem',      # 48px
-            '4xl': '4rem',      # 64px
+            'xs': '0.25rem', 'sm': '0.5rem', 'md': '1rem', 'lg': '1.5rem',
+            'xl': '2rem', '2xl': '2.5rem', '3xl': '3rem', '4xl': '4rem',
         }
         
-        # Rayons de bordure
         self.border_radius = {
-            'none': '0',
-            'sm': '0.25rem',    # 4px
-            'md': '0.375rem',   # 6px
-            'lg': '0.5rem',     # 8px
-            'xl': '0.75rem',    # 12px
-            '2xl': '1rem',      # 16px
-            'full': '9999px',   # Cercle parfait
+            'none': '0', 'sm': '0.25rem', 'md': '0.375rem', 'lg': '0.5rem',
+            'xl': '0.75rem', '2xl': '1rem', 'full': '9999px',
         }
         
-        # Ombres
         self.shadows = {
             'none': 'none',
             'sm': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
@@ -154,162 +134,92 @@ class ThemeManager:
             'xl': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
         }
 
-    def delayed_system_detection(self):
-        """Détecter le thème système après l'initialisation"""
-        try:
-            # Maintenant on peut utiliser JavaScript
-            self.detect_system_theme()
-            
-            # Ajouter la classe de thème
-            ui.run_javascript(f"""
-                document.documentElement.className = 'theme-{self.theme_preference.value}';
-                console.log('🎨 Thème initialisé:', '{self.current_theme.value}', 'Préférence:', '{self.theme_preference.value}');
-            """)
-        except Exception as e:
-            print(f"⚠️ Détection système échouée: {e}")
-
-    def detect_system_theme(self):
-        """Détecter le thème système via JavaScript (de manière sécurisée)"""
+    def detect_and_apply_system_theme(self):
+        """Détecter le thème système et l'appliquer immédiatement"""
         try:
             ui.run_javascript("""
-                // Détecter le thème système
+                // Détecter le thème système immédiatement
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 const systemTheme = prefersDark ? 'dark' : 'light';
                 
-                // Envoyer le résultat au serveur via un événement personnalisé
+                // Appliquer immédiatement le thème détecté
+                document.documentElement.setAttribute('data-theme', systemTheme);
+                document.body.className = document.body.className.replace(/theme-(light|dark)/g, '') + ' theme-' + systemTheme;
+                
+                console.log('🎨 Thème système détecté et appliqué:', systemTheme);
+                
+                // Envoyer au serveur pour sauvegarder
                 fetch('/api/theme/system-detected', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({theme: systemTheme})
-                }).catch(() => {
-                    // Fallback: utiliser le localStorage temporaire
-                    localStorage.setItem('detected_system_theme', systemTheme);
-                    console.log('🎨 Thème système détecté (fallback):', systemTheme);
-                });
+                }).catch(console.error);
                 
-                // Écouter les changements de thème système
+                // Écouter les changements
                 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-                    const newSystemTheme = e.matches ? 'dark' : 'light';
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    document.body.className = document.body.className.replace(/theme-(light|dark)/g, '') + ' theme-' + newTheme;
+                    
                     fetch('/api/theme/system-changed', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({theme: newSystemTheme})
-                    }).catch(() => {
-                        localStorage.setItem('detected_system_theme', newSystemTheme);
-                        console.log('🔄 Changement thème système (fallback):', newSystemTheme);
-                    });
+                        body: JSON.stringify({theme: newTheme})
+                    }).catch(console.error);
+                    
+                    console.log('🔄 Thème système changé:', newTheme);
                 });
-                
-                console.log('🎨 Détection thème système initialisée');
             """)
         except Exception as e:
-            # Fallback si JavaScript échoue
-            print(f"⚠️ Impossible de détecter le thème système: {e}")
-            self.system_theme = Theme.LIGHT
+            print(f"⚠️ Erreur détection thème système: {e}")
+            # Fallback vers le thème clair
+            self.current_theme = Theme.LIGHT
 
-    def load_theme_preferences(self):
-        """Charger les préférences de thème depuis le storage"""
+    def load_user_theme_preference(self):
+        """Charger la préférence utilisateur depuis le storage"""
         try:
-            # Charger la préférence utilisateur
-            stored_preference = app.storage.user.get('theme_preference', 'auto')
-            self.theme_preference = ThemePreference(stored_preference)
-            
-            # Charger le thème système détecté (si disponible)
-            stored_system_theme = app.storage.user.get('system_theme', 'light')
-            self.system_theme = Theme(stored_system_theme)
-            
-            # Appliquer le thème approprié
-            self.apply_theme_preference()
-            
+            stored_theme = app.storage.user.get('preferred_theme')
+            if stored_theme in ['light', 'dark']:
+                self.current_theme = Theme(stored_theme)
+                print(f"✅ Préférence utilisateur chargée: {stored_theme}")
+                return True
+            else:
+                print("💡 Aucune préférence utilisateur, utilisation du thème système")
+                return False
         except (RuntimeError, ValueError, KeyError):
-            # Fallback en cas d'erreur
-            self.theme_preference = ThemePreference.AUTO
-            self.system_theme = Theme.LIGHT
-            self.current_theme = Theme.LIGHT
+            print("⚠️ Impossible de charger la préférence utilisateur")
+            return False
 
-    def load_theme(self):
-        """Méthode de compatibilité - redirige vers load_theme_preferences"""
-        return self.load_theme_preferences()
-
-    def save_theme_preferences(self):
-        """Sauvegarder les préférences de thème"""
+    def save_user_theme_preference(self):
+        """Sauvegarder la préférence utilisateur"""
         try:
-            app.storage.user['theme_preference'] = self.theme_preference.value
-            app.storage.user['system_theme'] = self.system_theme.value
-            app.storage.user['current_theme'] = self.current_theme.value
+            app.storage.user['preferred_theme'] = self.current_theme.value
+            print(f"💾 Préférence sauvegardée: {self.current_theme.value}")
         except (RuntimeError, ValueError):
-            print("⚠️ Impossible de sauvegarder les préférences de thème")
-
-    def apply_theme_preference(self):
-        """Appliquer le thème selon la préférence utilisateur"""
-        if self.theme_preference == ThemePreference.AUTO:
-            # Suivre le thème système
-            self.current_theme = self.system_theme
-        elif self.theme_preference == ThemePreference.LIGHT:
-            # Forcer le thème clair
-            self.current_theme = Theme.LIGHT
-        elif self.theme_preference == ThemePreference.DARK:
-            # Forcer le thème sombre
-            self.current_theme = Theme.DARK
-
-    def set_system_theme(self, system_theme: Theme):
-        """Mettre à jour le thème système détecté"""
-        self.system_theme = system_theme
-        
-        # Si l'utilisateur suit le système, appliquer le changement
-        if self.theme_preference == ThemePreference.AUTO:
-            old_theme = self.current_theme
-            self.current_theme = system_theme
-            
-            # Sauvegarder et appliquer seulement si le thème a changé
-            if old_theme != self.current_theme:
-                self.save_theme_preferences()
-                self.update_theme_dynamically()
-                
-                theme_name = 'sombre' if self.current_theme == Theme.DARK else 'clair'
-                ui.notify(f'Thème système changé vers {theme_name}', type='info')
+            print("⚠️ Impossible de sauvegarder la préférence")
 
     def toggle_theme(self):
-        """Basculer entre les thèmes (cycle: auto → light → dark → auto)"""
-        if self.theme_preference == ThemePreference.AUTO:
-            # Auto → Light
-            self.theme_preference = ThemePreference.LIGHT
-            self.current_theme = Theme.LIGHT
-            message = "Thème clair forcé"
-        elif self.theme_preference == ThemePreference.LIGHT:
-            # Light → Dark
-            self.theme_preference = ThemePreference.DARK
-            self.current_theme = Theme.DARK
-            message = "Thème sombre forcé"
-        else:
-            # Dark → Auto
-            self.theme_preference = ThemePreference.AUTO
-            self.current_theme = self.system_theme
-            theme_name = 'sombre' if self.current_theme == Theme.DARK else 'clair'
-            message = f"Thème automatique ({theme_name})"
+        """Basculer simplement entre clair et sombre"""
+        # Basculer le thème
+        self.current_theme = Theme.DARK if self.current_theme == Theme.LIGHT else Theme.LIGHT
         
-        self.save_theme_preferences()
-        self.update_theme_dynamically()
-        self.force_refresh_form_fields()
-        self.ensure_high_css_specificity()
+        # Sauvegarder la préférence
+        self.save_user_theme_preference()
         
-        ui.notify(message, type='info')
+        # Appliquer le nouveau thème
+        self.apply_theme_dynamically()
+        
+        # Notification
+        theme_name = "sombre" if self.current_theme == Theme.DARK else "clair"
+        ui.notify(f'Thème {theme_name} activé', type='info')
+        
+        print(f"🎨 Thème basculé vers: {self.current_theme.value}")
 
-    def set_theme_preference(self, preference: ThemePreference):
-        """Définir une préférence de thème spécifique"""
-        self.theme_preference = preference
-        self.apply_theme_preference()
-        self.save_theme_preferences()
-        self.update_theme_dynamically()
-
-    def get_theme_status(self) -> Dict[str, str]:
-        """Obtenir le statut complet du thème"""
-        return {
-            'current_theme': self.current_theme.value,
-            'theme_preference': self.theme_preference.value,
-            'system_theme': self.system_theme.value,
-            'is_following_system': self.theme_preference == ThemePreference.AUTO
-        }
+    def set_theme(self, theme: Theme):
+        """Définir un thème spécifique"""
+        self.current_theme = theme
+        self.save_user_theme_preference()
+        self.apply_theme_dynamically()
 
     def get_color(self, color_name: str) -> str:
         """Obtenir une couleur du thème actuel"""
@@ -318,75 +228,69 @@ class ThemeManager:
     def get_colors(self) -> Dict[str, str]:
         """Obtenir toutes les couleurs du thème actuel"""
         return self.theme_colors[self.current_theme].copy()
-    
-    def get_spacing(self, size: str) -> str:
-        """Obtenir une valeur d'espacement"""
-        return self.spacing.get(size, '1rem')
-    
-    def get_border_radius(self, size: str) -> str:
-        """Obtenir un rayon de bordure"""
-        return self.border_radius.get(size, '0.375rem')
-    
-    def get_shadow(self, size: str) -> str:
-        """Obtenir une ombre"""
-        return self.shadows.get(size, 'none')
-    
+
     def generate_css(self) -> str:
-        """Générer le CSS du thème avec détection système"""
-        colors = self.get_colors()
+        """Générer le CSS du thème avec détection système automatique"""
+        light_colors = self.theme_colors[Theme.LIGHT]
+        dark_colors = self.theme_colors[Theme.DARK]
         
-        # Générer les variables CSS
-        css_vars = []
-        for name, color in colors.items():
-            css_vars.append(f"--theme-{name.replace('_', '-')}: {color}")
+        # Générer les variables CSS pour le thème clair
+        light_vars = []
+        for name, color in light_colors.items():
+            light_vars.append(f"--theme-{name.replace('_', '-')}: {color}")
         
-        # Ajouter les variables d'espacement
+        # Générer les variables CSS pour le thème sombre
+        dark_vars = []
+        for name, color in dark_colors.items():
+            dark_vars.append(f"--theme-{name.replace('_', '-')}: {color}")
+        
+        # Ajouter les variables d'espacement, bordures et ombres
+        spacing_vars = []
         for name, value in self.spacing.items():
-            css_vars.append(f"--spacing-{name}: {value}")
+            spacing_vars.append(f"--spacing-{name}: {value}")
         
-        # Ajouter les variables de border-radius
         for name, value in self.border_radius.items():
-            css_vars.append(f"--radius-{name}: {value}")
+            spacing_vars.append(f"--radius-{name}: {value}")
         
-        # Ajouter les variables d'ombre
         for name, value in self.shadows.items():
-            css_vars.append(f"--shadow-{name}: {value}")
-        
+            spacing_vars.append(f"--shadow-{name}: {value}")
+
         return f"""
+        /* === VARIABLES DE THÈME === */
         :root {{
-            {'; '.join(css_vars)};
+            {'; '.join(spacing_vars)};
         }}
         
-        /* Détection automatique du thème système (fallback) */
+        /* Thème clair (défaut) */
+        :root,
+        :root[data-theme="light"],
+        .theme-light {{
+            {'; '.join(light_vars)};
+        }}
+        
+        /* Thème sombre */
+        :root[data-theme="dark"],
+        .theme-dark {{
+            {'; '.join(dark_vars)};
+        }}
+        
+        /* Détection automatique du thème système */
         @media (prefers-color-scheme: dark) {{
-            :root.theme-auto {{
-                --theme-primary: #34d399;
-                --theme-primary-dark: #10b981;
-                --theme-background: #111827;
-                --theme-surface: #1f2937;
-                --theme-card-background: #1f2937;
-                --theme-text: #f9fafb;
-                --theme-text-secondary: #d1d5db;
-                --theme-text-muted: #9ca3af;
-                --theme-border: #374151;
-                /* Autres variables dark... */
+            :root:not([data-theme]) {{
+                {'; '.join(dark_vars)};
             }}
         }}
         
         /* === STYLES DE BASE === */
         body {{
-            background-color: var(--theme-background);
-            color: var(--theme-text);
+            background-color: var(--theme-background) !important;
+            color: var(--theme-text) !important;
             transition: background-color 0.3s ease, color 0.3s ease;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }}
         
-        /* === CLASSES UTILITAIRES POUR LES COULEURS === */
-        
-        /* Backgrounds */
+        /* === CLASSES UTILITAIRES === */
         .bg-primary {{ background-color: var(--theme-primary) !important; }}
-        .bg-primary-dark {{ background-color: var(--theme-primary-dark) !important; }}
-        .bg-primary-light {{ background-color: var(--theme-primary-light) !important; }}
         .bg-secondary {{ background-color: var(--theme-secondary) !important; }}
         .bg-surface {{ background-color: var(--theme-surface) !important; }}
         .bg-card {{ background-color: var(--theme-card-background) !important; }}
@@ -395,15 +299,7 @@ class ThemeManager:
         .bg-error {{ background-color: var(--theme-error) !important; }}
         .bg-info {{ background-color: var(--theme-info) !important; }}
         
-        /* Background states */
-        .bg-success-light {{ background-color: var(--theme-success-bg) !important; }}
-        .bg-warning-light {{ background-color: var(--theme-warning-bg) !important; }}
-        .bg-error-light {{ background-color: var(--theme-error-bg) !important; }}
-        .bg-info-light {{ background-color: var(--theme-info-bg) !important; }}
-        
-        /* Text colors */
         .text-primary {{ color: var(--theme-primary) !important; }}
-        .text-primary-dark {{ color: var(--theme-primary-dark) !important; }}
         .text-secondary {{ color: var(--theme-secondary) !important; }}
         .text-main {{ color: var(--theme-text) !important; }}
         .text-muted {{ color: var(--theme-text-secondary) !important; }}
@@ -414,12 +310,11 @@ class ThemeManager:
         .text-error {{ color: var(--theme-error) !important; }}
         .text-info {{ color: var(--theme-info) !important; }}
         
-        /* Borders */
         .border-primary {{ border-color: var(--theme-primary) !important; }}
         .border-default {{ border-color: var(--theme-border) !important; }}
         .border-focus {{ border-color: var(--theme-border-focus) !important; }}
         
-        /* === CLASSES UTILITAIRES POUR LES BOUTONS === */
+        /* === BOUTONS === */
         .btn-primary {{
             background-color: var(--theme-primary) !important;
             color: var(--theme-text-inverse) !important;
@@ -440,12 +335,6 @@ class ThemeManager:
             transition: all 0.2s ease !important;
         }}
         
-        .btn-secondary:hover {{
-            background-color: var(--theme-secondary-dark) !important;
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }}
-        
         .btn-outline {{
             background-color: transparent !important;
             color: var(--theme-primary) !important;
@@ -458,17 +347,7 @@ class ThemeManager:
             color: var(--theme-text-inverse) !important;
         }}
         
-        .btn-ghost {{
-            background-color: transparent !important;
-            color: var(--theme-primary) !important;
-            border: none !important;
-        }}
-        
-        .btn-ghost:hover {{
-            background-color: var(--theme-hover) !important;
-        }}
-        
-        /* === CLASSES UTILITAIRES POUR LES CARTES === */
+        /* === CARTES === */
         .card {{
             background-color: var(--theme-card-background) !important;
             border: 1px solid var(--theme-border) !important;
@@ -480,11 +359,6 @@ class ThemeManager:
         .card:hover {{
             box-shadow: var(--shadow-lg) !important;
             transform: translateY(-2px);
-        }}
-        
-        .card-elevated {{
-            background-color: var(--theme-surface-elevated) !important;
-            box-shadow: var(--shadow-md) !important;
         }}
         
         /* === GRADIENTS === */
@@ -500,7 +374,7 @@ class ThemeManager:
             background: var(--theme-gradient-hero) !important;
         }}
         
-        /* === CLASSES UTILITAIRES POUR LA MISE EN PAGE === */
+        /* === LAYOUT === */
         .page-container {{
             max-width: 1200px;
             margin: 0 auto;
@@ -508,36 +382,7 @@ class ThemeManager:
             padding-right: var(--spacing-lg);
         }}
         
-        @media (min-width: 1201px) {{
-            .page-container {{
-                max-width: 1400px;
-                padding-left: var(--spacing-xl);
-                padding-right: var(--spacing-xl);
-            }}
-        }}
-        
-        @media (max-width: 768px) {{
-            .page-container {{
-                padding-left: var(--spacing-md);
-                padding-right: var(--spacing-md);
-            }}
-        }}
-        
-        /* === ANIMATIONS ET TRANSITIONS === */
-        .theme-transition {{
-            transition: all 0.3s ease !important;
-        }}
-        
-        .hover-lift:hover {{
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }}
-        
-        .hover-scale:hover {{
-            transform: scale(1.02);
-        }}
-        
-        /* === OVERRIDE NICEGUI === */
+        /* === OVERRIDES NICEGUI === */
         .q-page {{
             background-color: var(--theme-background) !important;
         }}
@@ -552,44 +397,33 @@ class ThemeManager:
             color: var(--theme-text-inverse) !important;
         }}
         
-        .q-btn--outline {{
-            border-color: var(--theme-primary) !important;
-            color: var(--theme-primary) !important;
-        }}
-        
-        /* === FORM FIELDS FIXES === */
-        
-        /* Input fields - Text color */
+        /* === FORMULAIRES (CORRIGÉ POUR THÈME SOMBRE) === */
         .q-input,
         .q-select,
         .q-textarea {{
             color: var(--theme-text) !important;
         }}
         
-        /* Input native text (le texte que l'utilisateur tape) */
         .q-field__native,
         .q-field__input {{
             color: var(--theme-text) !important;
+            background-color: transparent !important;
         }}
         
-        /* Labels des champs */
         .q-field__label {{
             color: var(--theme-text-secondary) !important;
         }}
         
-        /* Label en focus */
         .q-field--focused .q-field__label {{
             color: var(--theme-primary) !important;
         }}
         
-        /* Placeholder text */
         .q-field__native::placeholder,
         .q-field__input::placeholder {{
             color: var(--theme-text-muted) !important;
             opacity: 0.7 !important;
         }}
         
-        /* Bordures des champs outlined */
         .q-field--outlined .q-field__control:before {{
             border-color: var(--theme-border) !important;
         }}
@@ -602,29 +436,17 @@ class ThemeManager:
             border-color: var(--theme-border-focus) !important;
         }}
         
-        /* Background des champs */
         .q-field--outlined .q-field__control {{
             background-color: var(--theme-surface) !important;
         }}
         
         /* Select dropdown */
-        .q-select .q-field__native {{
-            color: var(--theme-text) !important;
-        }}
-        
-        /* Select dropdown arrow */
-        .q-select .q-field__append {{
-            color: var(--theme-text-secondary) !important;
-        }}
-        
-        /* Menu dropdown */
         .q-menu {{
             background-color: var(--theme-card-background) !important;
             color: var(--theme-text) !important;
             border: 1px solid var(--theme-border) !important;
         }}
         
-        /* Items dans le dropdown */
         .q-item {{
             color: var(--theme-text) !important;
         }}
@@ -636,6 +458,16 @@ class ThemeManager:
         .q-item--active {{
             background-color: var(--theme-primary) !important;
             color: var(--theme-text-inverse) !important;
+        }}
+        
+        /* === ANIMATIONS === */
+        .theme-transition {{
+            transition: all 0.3s ease !important;
+        }}
+        
+        .hover-lift:hover {{
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
         }}
         
         /* === SCROLLBAR === */
@@ -655,41 +487,42 @@ class ThemeManager:
         ::-webkit-scrollbar-thumb:hover {{
             background: var(--theme-primary);
         }}
-        
-        /* === UTILITAIRES RESPONSIVE === */
-        @media (max-width: 640px) {{
-            .responsive-text {{
-                font-size: 0.875rem;
-            }}
-            
-            .responsive-padding {{
-                padding: var(--spacing-sm);
-            }}
-        }}
         """
-    
+
     def apply_theme(self):
-        """Appliquer le thème à l'interface (SANS JavaScript pendant l'init)"""
-        # Charger les préférences (sans JavaScript)
-        self.load_theme_preferences()
+        """Appliquer le thème initial"""
+        # Essayer de charger la préférence utilisateur
+        has_user_preference = self.load_user_theme_preference()
         
         # Générer et appliquer le CSS
         css_content = self.generate_css()
         ui.add_head_html(f'<style id="theme-css">{css_content}</style>')
         
-        # Ajouter les styles à haute spécificité
-        self.ensure_high_css_specificity()
-        
-        # Programmer la détection système pour après l'initialisation
-        ui.timer(0.1, lambda: self.delayed_system_detection(), once=True)
-    
-    def update_theme_dynamically(self):
-        """Mettre à jour le thème de manière dynamique (pour le toggle)"""
+        # Si pas de préférence utilisateur, détecter le thème système
+        if not has_user_preference:
+            # Programmer la détection système après l'initialisation
+            ui.timer(0.1, self.detect_and_apply_system_theme, once=True)
+        else:
+            # Appliquer le thème utilisateur immédiatement
+            ui.timer(0.1, lambda: self.apply_theme_immediately(self.current_theme.value), once=True)
+
+    def apply_theme_immediately(self, theme: str):
+        """Appliquer un thème immédiatement via JavaScript"""
         try:
-            # Générer le nouveau CSS
+            ui.run_javascript(f"""
+                document.documentElement.setAttribute('data-theme', '{theme}');
+                document.body.className = document.body.className.replace(/theme-(light|dark)/g, '') + ' theme-{theme}';
+                console.log('🎨 Thème appliqué:', '{theme}');
+            """)
+        except Exception as e:
+            print(f"⚠️ Erreur application thème: {e}")
+
+    def apply_theme_dynamically(self):
+        """Appliquer le thème de manière dynamique (pour le toggle)"""
+        try:
+            # Régénérer le CSS avec le nouveau thème
             css_content = self.generate_css()
             
-            # Supprimer l'ancien style et ajouter le nouveau via JavaScript
             ui.run_javascript(f"""
                 // Supprimer l'ancien style
                 const existingStyle = document.getElementById('theme-css');
@@ -703,47 +536,27 @@ class ThemeManager:
                 style.textContent = `{css_content}`;
                 document.head.appendChild(style);
                 
-                // Mettre à jour la classe de thème
-                document.documentElement.className = 'theme-{self.theme_preference.value}';
+                // Appliquer le thème
+                document.documentElement.setAttribute('data-theme', '{self.current_theme.value}');
+                document.body.className = document.body.className.replace(/theme-(light|dark)/g, '') + ' theme-{self.current_theme.value}';
                 
-                // Forcer la mise à jour des champs de formulaire existants
-                const fields = document.querySelectorAll('.q-field__native, .q-field__input, .q-field__label');
-                fields.forEach(field => {{
-                    field.style.color = '';
-                    field.offsetHeight; // Force reflow
-                }});
-                
-                console.log('Theme updated successfully to {self.current_theme.value} (preference: {self.theme_preference.value})');
+                console.log('🎨 Thème mis à jour dynamiquement:', '{self.current_theme.value}');
             """)
-        except:
-            # Si JavaScript échoue, utiliser la méthode simple
-            self.apply_theme()
-    
+        except Exception as e:
+            print(f"⚠️ Erreur mise à jour dynamique: {e}")
+
     def get_theme_icon(self) -> str:
-        """Obtenir l'icône du thème selon la préférence"""
-        if self.theme_preference == ThemePreference.AUTO:
-            return 'auto_mode'  # ou 'brightness_auto'
-        elif self.theme_preference == ThemePreference.LIGHT:
-            return 'light_mode'
-        else:
-            return 'dark_mode'
-    
+        """Obtenir l'icône du thème actuel"""
+        return 'dark_mode' if self.current_theme == Theme.LIGHT else 'light_mode'
+
     def get_theme_name(self) -> str:
         """Obtenir le nom du thème actuel"""
-        if self.theme_preference == ThemePreference.AUTO:
-            system_name = "sombre" if self.system_theme == Theme.DARK else "clair"
-            return f"Automatique ({system_name})"
-        elif self.theme_preference == ThemePreference.LIGHT:
-            return "Clair"
-        else:
-            return "Sombre"
-    
+        return "Clair" if self.current_theme == Theme.LIGHT else "Sombre"
+
     def is_dark_theme(self) -> bool:
         """Vérifier si le thème actuel est sombre"""
         return self.current_theme == Theme.DARK
-    
-    # === VOS MÉTHODES EXISTANTES ===
-    
+
     def get_button_classes(self, variant: str = 'primary', size: str = 'md') -> str:
         """Obtenir les classes CSS pour un bouton"""
         base_classes = 'transition-all duration-200 font-medium rounded-lg'
@@ -752,7 +565,7 @@ class ThemeManager:
             'primary': 'btn-primary',
             'secondary': 'btn-secondary',
             'outline': 'btn-outline',
-            'ghost': 'btn-ghost'
+            'ghost': 'text-primary hover:bg-surface'
         }
         
         size_classes = {
@@ -763,133 +576,18 @@ class ThemeManager:
         }
         
         return f"{base_classes} {variant_classes.get(variant, 'btn-primary')} {size_classes.get(size, 'px-4 py-2')}"
-    
+
     def get_card_classes(self, elevated: bool = False, hover: bool = True) -> str:
         """Obtenir les classes CSS pour une carte"""
         classes = ['card']
         
         if elevated:
-            classes.append('card-elevated')
+            classes.append('shadow-lg')
         
         if hover:
             classes.append('hover-lift')
         
         return ' '.join(classes)
-    
-    def get_text_classes(self, variant: str = 'main', size: str = 'base') -> str:
-        """Obtenir les classes CSS pour le texte"""
-        variant_classes = {
-            'main': 'text-main',
-            'muted': 'text-muted',
-            'light': 'text-light',
-            'primary': 'text-primary',
-            'secondary': 'text-secondary',
-            'success': 'text-success',
-            'warning': 'text-warning',
-            'error': 'text-error',
-            'info': 'text-info'
-        }
-        
-        size_classes = {
-            'xs': 'text-xs',
-            'sm': 'text-sm',
-            'base': 'text-base',
-            'lg': 'text-lg',
-            'xl': 'text-xl',
-            '2xl': 'text-2xl',
-            '3xl': 'text-3xl',
-            '4xl': 'text-4xl'
-        }
-        
-        return f"{variant_classes.get(variant, 'text-main')} {size_classes.get(size, 'text-base')}"
-    
-    def force_refresh_form_fields(self):
-        """Forcer la mise à jour de tous les champs de formulaire"""
-        try:
-            ui.run_javascript("""
-                // Fonction pour forcer la mise à jour des styles
-                function refreshFormFields() {
-                    console.log('Refreshing form fields...');
-                    
-                    // Sélectionner tous les éléments de formulaire
-                    const selectors = [
-                        '.q-field__native',
-                        '.q-field__input', 
-                        '.q-field__label',
-                        '.q-select .q-field__native',
-                        '.q-textarea .q-field__native',
-                        '.q-checkbox__label',
-                        '.q-radio__label'
-                    ];
-                    
-                    selectors.forEach(selector => {
-                        const elements = document.querySelectorAll(selector);
-                        console.log(`Found ${elements.length} elements for ${selector}`);
-                        
-                        elements.forEach(element => {
-                            // Forcer un recalcul des styles
-                            element.style.color = '';
-                            element.offsetHeight; // Force reflow
-                            
-                            // Ajouter une classe temporaire pour forcer la mise à jour
-                            element.classList.add('theme-refresh');
-                            setTimeout(() => {
-                                element.classList.remove('theme-refresh');
-                            }, 10);
-                        });
-                    });
-                    
-                    console.log('Form fields refresh completed');
-                }
-                
-                // Exécuter immédiatement
-                refreshFormFields();
-                
-                // Et après un petit délai pour s'assurer que le CSS est appliqué
-                setTimeout(refreshFormFields, 100);
-            """)
-        except Exception as e:
-            print(f"Force refresh error: {e}")
-    
-    def ensure_high_css_specificity(self):
-        """S'assurer que nos styles ont une spécificité plus élevée"""
-        ui.add_head_html("""
-        <style>
-        /* Force higher specificity for form fields */
-        html body .q-field .q-field__native,
-        html body .q-field .q-field__input {
-            color: var(--theme-text) !important;
-        }
-        
-        html body .q-field .q-field__label {
-            color: var(--theme-text-secondary) !important;
-        }
-        
-        html body .q-field--focused .q-field__label {
-            color: var(--theme-primary) !important;
-        }
-        
-        html body .q-select .q-field__native {
-            color: var(--theme-text) !important;
-        }
-        
-        html body .q-textarea .q-field__native {
-            color: var(--theme-text) !important;
-        }
-        
-        /* Placeholder avec spécificité élevée */
-        html body .q-field__native::placeholder,
-        html body .q-field__input::placeholder {
-            color: var(--theme-text-muted) !important;
-            opacity: 0.7 !important;
-        }
-        
-        /* Classe helper pour forcer la mise à jour */
-        .theme-refresh {
-            transition: color 0.1s ease !important;
-        }
-        </style>
-        """)
 
 # Instance globale du gestionnaire de thème
 theme_manager = ThemeManager()

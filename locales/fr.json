@@ -1,119 +1,131 @@
 {
+  "nav": {
+    "home": "Accueil",
+    "articles": "Articles", 
+    "reports": "Rapports",
+    "chatbot": "Assistant",
+    "about": "À propos",
+    "contact": "Contact",
+    "navigation": "Navigation",
+    "language": "Langue",
+    "appearance": "Apparence"
+  },
+  "theme": {
+    "auto": "Automatique",
+    "light": "Clair", 
+    "dark": "Sombre",
+    "auto_tooltip": "Thème automatique (actuellement {system})",
+    "light_tooltip": "Thème clair",
+    "dark_tooltip": "Thème sombre",
+    "follows_system": "Suit le système ({system})",
+    "forced_light": "Forcé en mode clair",
+    "forced_dark": "Forcé en mode sombre"
+  },
+  "language": {
+    "current": "Langue actuelle",
+    "select": "Choisir la langue",
+    "fr": "Français",
+    "en": "Anglais", 
+    "ar": "Arabe"
+  },
   "common": {
-    "title": "MindCare",
+    "search": "Rechercher...",
+    "read_more": "Lire plus",
+    "download": "Télécharger",
+    "share": "Partager",
+    "like": "J'aime",
+    "sort": "Trier",
+    "filter": "Filtrer",
     "loading": "Chargement...",
     "error": "Erreur",
     "success": "Succès",
-    "save": "Enregistrer",
     "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "view": "Voir",
     "close": "Fermer",
     "back": "Retour",
     "next": "Suivant",
     "previous": "Précédent",
-    "search": "Rechercher",
-    "filter": "Filtrer",
-    "sort": "Trier",
-    "date": "Date",
-    "author": "Auteur",
-    "category": "Catégorie",
-    "tags": "Tags",
-    "read_more": "Lire plus",
-    "view_all": "Voir tout",
-    "no_results": "Aucun résultat trouvé",
-    "page_not_found": "Page non trouvée"
-  },
-  "navigation": {
-    "home": "Accueil",
-    "articles": "Articles",
-    "reports": "Rapports",
-    "about": "À propos",
-    "contact": "Contact",
-    "help": "Aide",
-    "settings": "Paramètres"
-  },
-  "theme": {
-    "light": "Clair",
-    "dark": "Sombre",
-    "toggle": "Basculer le thème",
-    "current": "Thème actuel"
-  },
-  "language": {
-    "french": "Français",
-    "english": "Anglais",
-    "arabic": "Arabe",
-    "select": "Sélectionner la langue",
-    "current": "Langue actuelle"
+    "page": "Page",
+    "of": "sur",
+    "total": "Total",
+    "results": "résultats",
+    "no_results": "Aucun résultat"
   },
   "home": {
-    "title": "Bienvenue sur MindCare",
-    "subtitle": "Votre plateforme de santé mentale",
-    "description": "Découvrez des articles, rapports et ressources pour améliorer votre bien-être mental.",
-    "hero_title": "Prenez soin de votre santé mentale",
-    "hero_subtitle": "Accédez à des ressources fiables et des conseils professionnels",
+    "title": "Prenez soin de votre santé mentale",
+    "subtitle": "Accédez à des ressources fiables et des conseils professionnels pour améliorer votre bien-être mental",
+    "explore_now": "Explorer maintenant",
+    "learn_more": "En savoir plus",
+    "why_choose": "Pourquoi choisir MindCare ?",
     "features": {
-      "title": "Nos fonctionnalités",
       "articles": {
         "title": "Articles spécialisés",
-        "description": "Découvrez des articles rédigés par des professionnels"
+        "description": "Découvrez des articles rédigés par des professionnels de la santé mentale"
       },
       "reports": {
-        "title": "Rapports détaillés",
-        "description": "Consultez des rapports approfondis sur la santé mentale"
+        "title": "Rapports détaillés", 
+        "description": "Consultez des rapports approfondis sur les enjeux de santé mentale"
       },
       "resources": {
         "title": "Ressources utiles",
-        "description": "Accédez à des outils et ressources pratiques"
+        "description": "Accédez à des outils et ressources pratiques pour votre bien-être"
       },
       "support": {
         "title": "Support 24/7",
-        "description": "Obtenez de l'aide quand vous en avez besoin"
+        "description": "Obtenez de l'aide et des conseils quand vous en avez besoin"
       }
     },
     "stats": {
       "articles": "Articles",
-      "reports": "Rapports",
+      "reports": "Rapports", 
       "users": "Utilisateurs",
       "specialists": "Spécialistes"
     },
     "cta": {
-      "title": "Prêt à commencer ?",
-      "description": "Explorez nos ressources et commencez votre parcours",
-      "button": "Explorer maintenant"
+      "title": "Prêt à prendre soin de votre bien-être mental ?",
+      "subtitle": "Commencez votre parcours vers un meilleur équilibre mental dès aujourd'hui",
+      "explore_articles": "Explorer les articles",
+      "contact_us": "Nous contacter"
     }
   },
   "articles": {
     "title": "Articles",
     "subtitle": "Découvrez nos articles sur la santé mentale",
+    "empty": "Aucun article trouvé pour cette catégorie",
     "categories": {
+      "all": "Tous",
       "anxiety": "Anxiété",
       "depression": "Dépression",
-      "stress": "Stress",
+      "stress": "Stress", 
       "wellness": "Bien-être",
       "therapy": "Thérapie",
       "mindfulness": "Pleine conscience"
     },
     "filters": {
       "all": "Tous",
-      "recent": "Récents",
-      "popular": "Populaires",
-      "featured": "À la une"
+      "category": "Catégorie",
+      "sort_by": "Trier par"
     },
     "sort": {
-      "newest": "Plus récent",
-      "oldest": "Plus ancien",
-      "popular": "Populaire",
-      "title": "Titre A-Z"
+      "newest": "Plus récents",
+      "oldest": "Plus anciens", 
+      "popular": "Plus populaires",
+      "title": "Titre"
     },
     "card": {
-      "read_time": "Temps de lecture : {minutes} min",
-      "published": "Publié le {date}",
-      "by": "Par {author}"
-    },
-    "empty": "Aucun article trouvé pour les critères sélectionnés"
+      "read_time": "{time} min de lecture",
+      "views": "{count} vues",
+      "author": "Par {name}",
+      "published": "Publié le {date}"
+    }
   },
   "reports": {
     "title": "Rapports",
-    "subtitle": "Consultez nos rapports détaillés",
+    "subtitle": "Consultez nos rapports spécialisés en santé mentale", 
+    "empty": "Aucun rapport trouvé",
     "types": {
       "research": "Recherche",
       "survey": "Enquête",
@@ -121,83 +133,119 @@
       "white_paper": "Livre blanc"
     },
     "card": {
-      "pages": "{count} pages",
       "download": "Télécharger",
       "view": "Consulter",
-      "published": "Publié le {date}"
-    },
-    "empty": "Aucun rapport disponible"
+      "pages": "{count} pages",
+      "downloads": "{count} téléchargements",
+      "size": "Taille: {size}"
+    }
   },
   "about": {
     "title": "À propos",
-    "subtitle": "Découvrez notre mission",
+    "subtitle": "Découvrez notre mission et notre équipe",
     "mission": {
-      "title": "Notre mission",
-      "description": "Améliorer l'accès aux ressources de santé mentale et sensibiliser le public."
-    },
-    "team": {
-      "title": "Notre équipe",
-      "description": "Une équipe de professionnels dévoués à votre bien-être."
+      "title": "Notre Mission", 
+      "description": "Améliorer l'accès aux ressources de santé mentale et sensibiliser le public à l'importance du bien-être psychologique."
     },
     "values": {
-      "title": "Nos valeurs",
-      "accessibility": "Accessibilité",
-      "quality": "Qualité",
-      "empathy": "Empathie",
-      "innovation": "Innovation"
+      "title": "Nos Valeurs",
+      "accessibility": {
+        "title": "Accessibilité",
+        "description": "Rendre les ressources de santé mentale accessibles à tous"
+      },
+      "quality": {
+        "title": "Qualité", 
+        "description": "Fournir du contenu de haute qualité basé sur la recherche"
+      },
+      "empathy": {
+        "title": "Empathie",
+        "description": "Approche empathique et bienveillante dans tous nos services"
+      },
+      "innovation": {
+        "title": "Innovation",
+        "description": "Utiliser la technologie pour améliorer les soins de santé mentale"
+      }
+    },
+    "team": {
+      "title": "Notre Équipe",
+      "subtitle": "Une équipe de professionnels dévoués à votre bien-être"
+    },
+    "cta": {
+      "title": "Rejoignez Notre Mission",
+      "subtitle": "Ensemble, nous pouvons faire la différence dans la santé mentale.",
+      "contact": "Nous Contacter",
+      "articles": "Voir Nos Articles"
     }
   },
   "contact": {
-    "title": "Contact",
-    "subtitle": "Contactez-nous",
+    "title": "Contactez-nous",
+    "subtitle": "Nous sommes là pour vous accompagner dans votre parcours de bien-être",
     "form": {
-      "name": "Nom",
-      "email": "Email",
-      "subject": "Sujet",
-      "message": "Message",
-      "send": "Envoyer",
-      "success": "Message envoyé avec succès !",
+      "title": "Envoyez-nous un message",
+      "name": "Nom complet",
+      "email": "Adresse email",
+      "subject": "Sujet du message", 
+      "message": "Votre message",
+      "type": "Type de demande",
+      "types": {
+        "general": "Question générale",
+        "support": "Demande de support",
+        "feedback": "Commentaire/Suggestion", 
+        "partnership": "Partenariat",
+        "urgent": "Urgence"
+      },
+      "privacy": "J'accepte que mes données soient utilisées pour répondre à ma demande",
+      "send": "Envoyer le message",
+      "success": "Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.",
       "error": "Erreur lors de l'envoi du message"
     },
     "info": {
-      "address": "Adresse",
-      "phone": "Téléphone",
+      "title": "Nos coordonnées",
       "email": "Email",
-      "hours": "Heures d'ouverture"
+      "phone": "Téléphone", 
+      "address": "Adresse",
+      "hours": "Horaires"
+    },
+    "emergency": {
+      "title": "Besoin d'aide immédiate ?",
+      "subtitle": "Si vous êtes en détresse ou en situation d'urgence, contactez immédiatement ces numéros :",
+      "warning": "En cas d'urgence vitale ou de pensées suicidaires immédiates, appelez le 112 ou rendez-vous aux urgences de l'hôpital le plus proche."
     }
+  },
+  "chatbot": {
+    "title": "Assistant Virtuel MindCare",
+    "subtitle": "Posez vos questions et obtenez de l'aide instantanément",
+    "placeholder": "💬 Tapez votre message ici...",
+    "send": "Envoyer",
+    "welcome": "Bonjour ! 👋",
+    "welcome_message": "Je suis votre assistant virtuel MindCare. Je suis là pour vous accompagner et répondre à vos questions sur le bien-être mental. **Comment puis-je vous aider aujourd'hui ?**",
+    "suggestions": {
+      "wellness": "💡 Conseils bien-être",
+      "relaxation": "🧘 Exercices de relaxation",
+      "stress": "😊 Gestion du stress", 
+      "sleep": "🌙 Améliorer le sommeil"
+    },
+    "thinking": "Je réfléchis...",
+    "error": "Désolé, une erreur est survenue. Veuillez réessayer."
   },
   "footer": {
-    "description": "MindCare - Votre plateforme de santé mentale",
-    "links": {
-      "privacy": "Confidentialité",
-      "terms": "Conditions d'utilisation",
-      "cookies": "Cookies",
-      "sitemap": "Plan du site"
-    },
-    "social": {
-      "follow": "Suivez-nous",
-      "facebook": "Facebook",
-      "twitter": "Twitter",
-      "linkedin": "LinkedIn",
-      "instagram": "Instagram"
-    },
-    "copyright": "© {year} MindCare. Tous droits réservés."
+    "description": "Votre partenaire pour une meilleure santé mentale. Ressources, conseils et support pour votre bien-être.",
+    "quick_links": "Liens rapides",
+    "contact": "Contact", 
+    "follow_us": "Suivez-nous",
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
+    "sitemap": "Plan du site",
+    "help": "Aide",
+    "copyright": "© {year} {appName}. Tous droits réservés.",
+    "made_with": "Développé avec 💚 pour votre bien-être"
   },
   "errors": {
-    "404": {
-      "title": "Page non trouvée",
-      "description": "La page que vous cherchez n'existe pas.",
-      "button": "Retour à l'accueil"
-    },
-    "500": {
-      "title": "Erreur serveur",
-      "description": "Une erreur inattendue s'est produite.",
-      "button": "Réessayer"
-    },
-    "network": {
-      "title": "Erreur réseau",
-      "description": "Impossible de se connecter au serveur.",
-      "button": "Réessayer"
-    }
+    "page_not_found": "Page non trouvée",
+    "server_error": "Erreur serveur",
+    "network_error": "Erreur de réseau",
+    "required_field": "Ce champ est requis",
+    "invalid_email": "Adresse email invalide",
+    "invalid_phone": "Numéro de téléphone invalide"
   }
 }

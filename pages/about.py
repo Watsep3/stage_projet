@@ -3,7 +3,7 @@ from core.i18n import i18n, _
 from core.theme import theme_manager
 
 class AboutPage:
-    """Page à propos avec système de thème centralisé corrigé"""
+    """Page à propos avec système de thème centralisé"""
     
     def __init__(self):
         self.team_members = [
@@ -75,7 +75,7 @@ class AboutPage:
                 ui.label('Découvrez notre mission et notre équipe').classes('text-xl opacity-90')
     
     def render_mission_section(self):
-        """Rendre la section mission"""
+        """Rendre la section mission avec classes de thème"""
         with ui.element('div').classes('w-full py-20 px-4 bg-card'):
             with ui.column().classes('page-container'):
                 
@@ -110,7 +110,7 @@ class AboutPage:
                                 ui.label('Notre expertise à votre service').classes('text-muted')
     
     def render_values_section(self):
-        """Rendre la section valeurs"""
+        """Rendre la section valeurs avec classes de thème"""
         with ui.element('div').classes('w-full py-20 px-4 bg-surface'):
             with ui.column().classes('page-container'):
                 ui.label('Nos Valeurs').classes('text-4xl font-bold text-center mb-16 text-main')
@@ -121,14 +121,14 @@ class AboutPage:
                         self.render_value_card(value)
     
     def render_value_card(self, value):
-        """Rendre une carte de valeur"""
+        """Rendre une carte de valeur avec classes de thème"""
         with ui.card().classes(theme_manager.get_card_classes(hover=True) + ' text-center p-8'):
             ui.icon(value["icon"]).classes('text-6xl mb-6 text-primary')
             ui.label(value["title"]).classes('text-2xl font-bold mb-4 text-main')
             ui.label(value["description"]).classes('text-muted leading-relaxed')
     
     def render_team_section(self):
-        """Rendre la section équipe"""
+        """Rendre la section équipe avec classes de thème"""
         with ui.element('div').classes('w-full py-20 px-4 bg-card'):
             with ui.column().classes('page-container'):
                 ui.label('Notre Équipe').classes('text-4xl font-bold text-center mb-6 text-main')
@@ -140,7 +140,7 @@ class AboutPage:
                         self.render_team_member_card(member)
     
     def render_team_member_card(self, member):
-        """Rendre une carte de membre de l'équipe"""
+        """Rendre une carte de membre de l'équipe avec classes de thème"""
         with ui.card().classes(theme_manager.get_card_classes(hover=True) + ' text-center overflow-hidden'):
             # Image placeholder avec gradient
             with ui.element('div').classes('h-64 bg-surface flex items-center justify-center'):
@@ -158,7 +158,7 @@ class AboutPage:
                         ui.chip(specialty).classes('text-xs px-3 py-1 bg-surface text-primary border border-primary')
     
     def render_cta_section(self):
-        """Rendre la section call-to-action avec gradient"""
+        """Rendre la section call-to-action avec gradient de thème"""
         with ui.element('div').classes('w-full py-20 px-4 gradient-primary'):
             with ui.column().classes('page-container text-center text-inverse'):
                 ui.label('Rejoignez Notre Mission').classes('text-4xl font-bold mb-6')
@@ -170,7 +170,7 @@ class AboutPage:
                         'Nous Contacter',
                         on_click=lambda: ui.navigate.to('/contact'),
                         icon='contact_mail'
-                    ).classes('bg-card text-primary px-8 py-4 rounded-lg font-semibold hover:bg-surface transition-all w-full sm:w-auto shadow-lg')
+                    ).classes('bg-card text-primary px-8 py-4 rounded-lg font-semibold hover:bg-surface transition-all w-full sm:w-auto')
                     
                     ui.button(
                         'Voir Nos Articles',
@@ -179,7 +179,7 @@ class AboutPage:
                     ).classes('border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-primary transition-all w-full sm:w-auto')
     
     def render_additional_info_section(self):
-        """Section additionnelle avec plus d'informations"""
+        """Section additionnelle avec plus d'informations avec classes de thème"""
         with ui.element('div').classes('w-full py-16 px-4 bg-surface'):
             with ui.column().classes('page-container'):
                 ui.label('Pourquoi MindCare ?').classes('text-3xl font-bold text-center mb-12 text-main')

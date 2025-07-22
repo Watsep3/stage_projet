@@ -5,7 +5,7 @@ from config.database import SessionLocal, ArticleService
 import json
 
 class ArticlesPage:
-    """Page des articles utilisant la base de données avec thème corrigé"""
+    """Page des articles utilisant la base de données"""
     
     def __init__(self):
         self.articles = []
@@ -136,6 +136,40 @@ class ArticlesPage:
             print(f"❌ Erreur lors de la recherche: {e}")
             return []
     
+    def get_featured_articles(self):
+        """Obtenir les articles en vedette"""
+        try:
+            db = SessionLocal()
+            db_articles = ArticleService.get_featured(db)
+            
+            featured_articles = []
+            for article in db_articles:
+                article_dict = {
+                    "id": article.id,
+                    "title": article.title,
+                    "summary": article.summary,
+                    "category": article.category,
+                    "author": article.author,
+                    "date": article.date_created.strftime("%Y-%m-%d") if article.date_created else "",
+                    "read_time": article.read_time or 5,
+                    "image": article.image,
+                    "tags": json.loads(article.tags) if article.tags else [],
+                    "views": article.views or 0,
+                    "likes": article.likes or 0,
+                    "shares": article.shares or 0,
+                    "featured": article.featured or False,
+                    "published": article.published or True,
+                    "difficulty": article.difficulty or "beginner"
+                }
+                featured_articles.append(article_dict)
+            
+            db.close()
+            return featured_articles
+            
+        except Exception as e:
+            print(f"❌ Erreur lors du chargement des articles en vedette: {e}")
+            return []
+    
     def render(self):
         """Rendre la page des articles"""
         # Header
@@ -155,12 +189,12 @@ class ArticlesPage:
                 ui.label('Découvrez nos articles sur la santé mentale').classes('text-xl opacity-90')
     
     def render_filters(self):
-        """Rendre les filtres avec thème"""
+        """Rendre les filtres avec classes de thème"""
         with ui.element('div').classes('w-full py-6 px-4 bg-card border-default border-b'):
-            with ui.row().classes('page-container mx-auto gap-4 items-center flex-wrap'):
+            with ui.row().classes('page-container mx-auto gap-4 items-center'):
                 ui.label('Catégorie :').classes('font-medium text-main')
                 
-                # Boutons de catégorie
+                # Boutons de catégorie avec classes de thème
                 with ui.row().classes('gap-2 flex-wrap'):
                     for key, label in self.categories.items():
                         if key == self.current_category:
@@ -175,7 +209,7 @@ class ArticlesPage:
                             ).classes('px-4 py-2 rounded bg-surface text-muted hover:bg-hover hover:text-primary transition-colors')
     
     def render_articles_grid(self):
-        """Rendre la grille des articles"""
+        """Rendre la grille des articles avec classes de thème"""
         filtered_articles = self.get_filtered_articles()
         
         with ui.element('div').classes('w-full py-8 px-4 bg-surface'):
@@ -201,7 +235,7 @@ class ArticlesPage:
             ).classes(theme_manager.get_button_classes('primary', 'md'))
     
     def render_article_card(self, article):
-        """Rendre une carte d'article avec thème"""
+        """Rendre une carte d'article avec classes de thème"""
         with ui.card().classes(theme_manager.get_card_classes(hover=True) + ' cursor-pointer'):
             # Image placeholder ou réelle
             with ui.element('div').classes('h-48 bg-surface flex items-center justify-center relative overflow-hidden'):
@@ -229,7 +263,7 @@ class ArticlesPage:
             with ui.card_section().classes('p-6'):
                 # Catégorie avec couleur de thème
                 category_name = self.categories.get(article["category"], article["category"])
-                ui.chip(category_name).classes('text-xs mb-3 px-3 py-1 bg-primary text-white rounded-full')
+                ui.chip(category_name).classes(theme_manager.get_button_classes('primary', 'sm') + ' text-xs mb-3')
                 
                 # Titre
                 ui.label(article["title"]).classes('text-xl font-bold mb-2 line-clamp-2 text-main')
@@ -246,9 +280,9 @@ class ArticlesPage:
                 # Tags
                 with ui.row().classes('gap-1 mb-4 flex-wrap'):
                     for tag in article["tags"][:3]:
-                        ui.chip(f"#{tag}").classes('text-xs bg-surface text-muted px-2 py-1 rounded')
+                        ui.chip(f"#{tag}").classes('text-xs bg-surface text-muted')
                 
-                # Actions avec boutons thématisés
+                # Actions avec bouton de thème
                 with ui.row().classes('justify-between items-center'):
                     ui.button(
                         'Lire plus',

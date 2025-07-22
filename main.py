@@ -3,7 +3,7 @@ from pathlib import Path
 
 # Configuration
 from config.settings import settings, create_directories
-from core.theme import theme_manager, Theme
+from core.theme import theme_manager, ThemePreference, Theme
 from core.i18n import i18n, _
 
 # Pages
@@ -19,7 +19,7 @@ from components.navbar import Navbar
 from components.footer import Footer
 
 class MindCareApp:
-    """Application principale MindCare avec thème simplifié et détection système"""
+    """Application principale MindCare avec détection de thème système et support i18n"""
     
     def __init__(self):
         # Créer les dossiers nécessaires
@@ -31,22 +31,24 @@ class MindCareApp:
         # Initialiser le système i18n
         self.initialize_i18n()
         
-        # Initialiser et appliquer le thème
+        # Initialiser et appliquer le thème (SANS JavaScript pendant l'init)
         theme_manager.apply_theme()
+        
+        # Récupérer l'état du thème après initialisation
         self.current_theme = theme_manager.current_theme.value
         
-        # Initialiser la navbar avec callback simplifié
+        # Initialiser la navbar avec callbacks
         self.navbar = Navbar("MindCare", self.current_theme)
         self.navbar.set_theme_toggle_callback(self.toggle_theme)
         self.navbar.set_mobile_menu_callback(self.show_mobile_menu)
 
-        # Initialiser la footer
-        self.footer = Footer("MindCare")
+        # Initialiser la footer avec callbacks
+        self.footer = Footer("MindCare", self.current_theme)
         
         # Configurer les routes
         self.setup_routes()
         
-        # Configurer les routes API pour la gestion du thème
+        # Configurer les routes API pour la détection système et i18n
         self.setup_api_routes()
         
         # Ajouter le CSS pour le support RTL
@@ -55,8 +57,10 @@ class MindCareApp:
     def initialize_i18n(self):
         """Initialiser le système d'internationalisation"""
         try:
+            # Charger la langue de l'utilisateur depuis le storage
             i18n.load_language()
             
+            # Afficher les statistiques de traduction pour le debug
             if settings.debug:
                 from core.i18n import print_translation_stats
                 print_translation_stats()
@@ -65,6 +69,7 @@ class MindCareApp:
             
         except Exception as e:
             print(f"⚠️ Erreur lors de l'initialisation i18n: {e}")
+            # Utiliser la langue par défaut en cas d'erreur
             i18n.current_language = settings.default_language
     
     def setup_routes(self):
@@ -98,27 +103,36 @@ class MindCareApp:
         @ui.page('/lang/{language}')
         def change_language(language: str):
             if i18n.set_language(language):
+                # Rediriger vers la page d'accueil après changement
                 ui.navigate.to('/')
             else:
+                # Langue invalide, retourner à l'accueil
                 ui.navigate.to('/')
     
     def setup_api_routes(self):
-        """Configuration des routes API pour la gestion du thème"""
+        """Configuration des routes API pour la gestion du thème et de la langue"""
         
         @app.post('/api/theme/system-detected')
         async def system_theme_detected(request):
             """Recevoir la notification de détection du thème système"""
             try:
                 data = await request.json()
-                detected_theme = Theme.DARK if data.get('theme') == 'dark' else Theme.LIGHT
+                system_theme = Theme.DARK if data.get('theme') == 'dark' else Theme.LIGHT
                 
-                # Mettre à jour seulement si l'utilisateur n'a pas de préférence
-                if not theme_manager.load_user_theme_preference():
-                    theme_manager.current_theme = detected_theme
-                    theme_manager.save_user_theme_preference()
+                # Mettre à jour le thème système dans le manager
+                old_theme = theme_manager.system_theme
+                theme_manager.system_theme = system_theme
                 
-                print(f"🎨 Thème système détecté: {detected_theme.value}")
-                return {"status": "success", "theme": detected_theme.value}
+                # Sauvegarder dans le storage
+                theme_manager.save_theme_preferences()
+                
+                # Si l'utilisateur suit le système et que le thème a changé
+                if (theme_manager.theme_preference == ThemePreference.AUTO and 
+                    old_theme != system_theme):
+                    theme_manager.apply_theme_preference()
+                
+                print(f"🎨 Thème système détecté: {system_theme.value}")
+                return {"status": "success", "system_theme": system_theme.value}
                 
             except Exception as e:
                 print(f"Erreur détection thème système: {e}")
@@ -129,12 +143,13 @@ class MindCareApp:
             """Recevoir la notification de changement du thème système"""
             try:
                 data = await request.json()
-                new_theme = Theme.DARK if data.get('theme') == 'dark' else Theme.LIGHT
+                new_system_theme = Theme.DARK if data.get('theme') == 'dark' else Theme.LIGHT
                 
-                # Notifier le changement mais ne pas l'appliquer automatiquement
-                # L'utilisateur garde le contrôle de son thème
-                print(f"🔄 Thème système changé: {new_theme.value}")
-                return {"status": "success", "system_theme": new_theme.value}
+                # Mettre à jour via le manager (il gère automatiquement l'application)
+                theme_manager.set_system_theme(new_system_theme)
+                
+                print(f"🔄 Changement thème système: {new_system_theme.value}")
+                return {"status": "success", "new_system_theme": new_system_theme.value}
                 
             except Exception as e:
                 print(f"Erreur changement thème système: {e}")
@@ -175,6 +190,8 @@ class MindCareApp:
         ui.add_head_html("""
         <style>
         /* === SUPPORT RTL === */
+        
+        /* Direction du texte selon la langue */
         html[dir="rtl"] {
             direction: rtl;
         }
@@ -183,6 +200,7 @@ class MindCareApp:
             direction: ltr;
         }
         
+        /* RTL pour les langues arabes */
         .rtl {
             direction: rtl;
             text-align: right;
@@ -193,6 +211,7 @@ class MindCareApp:
             text-align: left;
         }
         
+        /* Ajustements spécifiques pour RTL */
         html[dir="rtl"] .navbar-container {
             flex-direction: row-reverse;
         }
@@ -205,14 +224,21 @@ class MindCareApp:
             flex-direction: row-reverse;
         }
         
+        /* Ajustements pour les cartes en RTL */
         html[dir="rtl"] .card {
             text-align: right;
         }
         
+        html[dir="rtl"] .card .q-card__section {
+            text-align: right;
+        }
+        
+        /* Ajustements pour les boutons en RTL */
         html[dir="rtl"] .q-btn {
             direction: rtl;
         }
         
+        /* Ajustements pour les inputs en RTL */
         html[dir="rtl"] .q-field {
             direction: rtl;
         }
@@ -222,26 +248,58 @@ class MindCareApp:
             text-align: right;
         }
         
+        /* Ajustements pour les menus en RTL */
+        html[dir="rtl"] .q-menu {
+            direction: rtl;
+        }
+        
+        html[dir="rtl"] .q-item {
+            direction: rtl;
+            text-align: right;
+        }
+        
+        /* Typography pour l'arabe */
         [lang="ar"], .arabic-text {
             font-family: 'Amiri', 'Noto Sans Arabic', 'Arabic UI Text', Arial, sans-serif;
             line-height: 1.8;
         }
         
-        [lang="ar"] .text-sm { font-size: 0.9rem; }
-        [lang="ar"] .text-lg { font-size: 1.2rem; }
-        [lang="ar"] .text-xl { font-size: 1.4rem; }
+        /* Ajustements des espacements pour l'arabe */
+        [lang="ar"] .text-sm {
+            font-size: 0.9rem;
+        }
         
-        .rtl-flip { transform: scaleX(-1); }
-        html[dir="rtl"] .rtl-flip { transform: scaleX(1); }
+        [lang="ar"] .text-lg {
+            font-size: 1.2rem;
+        }
         
+        [lang="ar"] .text-xl {
+            font-size: 1.4rem;
+        }
+        
+        /* Classes utilitaires pour RTL */
+        .rtl-flip {
+            transform: scaleX(-1);
+        }
+        
+        html[dir="rtl"] .rtl-flip {
+            transform: scaleX(1);
+        }
+        
+        /* Responsive pour RTL */
         @media (max-width: 768px) {
-            html[dir="rtl"] .mobile-menu-btn { order: -1; }
-            html[dir="rtl"] .logo-text { order: 1; }
+            html[dir="rtl"] .mobile-menu-btn {
+                order: -1;
+            }
+            
+            html[dir="rtl"] .logo-text {
+                order: 1;
+            }
         }
         </style>
         """)
         
-        # Polices pour l'arabe
+        # Ajouter les polices pour l'arabe
         ui.add_head_html("""
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -261,10 +319,10 @@ class MindCareApp:
             document.body.className = document.body.className.replace(/\\b(rtl|ltr)\\b/g, '') + ' {direction}';
         """)
 
-        # Créer le wrapper principal
-        classes = f'content-wrapper theme-{self.current_theme} {direction}'
+        # Créer le wrapper principal avec classe de thème et direction
+        classes = f'content-wrapper {self.current_theme}-theme {direction}'
         with ui.element('div').classes(classes):
-            # Navbar
+            # Navbar - utilise le composant séparé
             self.navbar.render()
             
             # Contenu principal
@@ -275,7 +333,7 @@ class MindCareApp:
             self.footer.render()
     
     def toggle_theme(self):
-        """Basculer le thème (simplifié)"""
+        """Basculer le thème avec le nouveau système (auto → light → dark → auto)"""
         # Utiliser le ThemeManager pour changer le thème
         theme_manager.toggle_theme()
         
@@ -284,9 +342,21 @@ class MindCareApp:
         
         # Mettre à jour le thème dans la navbar
         self.navbar.update_theme(self.current_theme)
+        self.navbar.update_theme_preference(theme_manager.theme_preference.value)
+        
+        # La notification est déjà gérée par le ThemeManager
+    
+    def get_theme_status_display(self) -> str:
+        """Obtenir un affichage du statut du thème pour le debug"""
+        status = theme_manager.get_theme_status()
+        return (f"Actuel: {status['current_theme']} | "
+                f"Préférence: {status['theme_preference']} | "
+                f"Système: {status['system_theme']} | "
+                f"Auto: {status['is_following_system']}")
     
     def show_mobile_menu(self):
-        """Afficher le menu mobile"""
+        """Afficher le menu mobile - Callback de la navbar"""
+        # Utilise le menu mobile par défaut de la navbar
         self.navbar.show_default_mobile_menu()
     
     def get_app_info(self) -> dict:
@@ -294,7 +364,7 @@ class MindCareApp:
         return {
             "name": settings.app_name,
             "version": settings.app_version,
-            "theme": self.current_theme,
+            "theme": self.get_theme_status_display(),
             "language": i18n.get_language(),
             "language_name": i18n.get_language_name(i18n.get_language()),
             "direction": i18n.get_language_direction(),
